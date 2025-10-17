@@ -84,8 +84,9 @@
     <!-- Quick Actions -->
     <h2 class="text-center mt-5" id="quick-actions">Quick Actions</h2>
     <div class="row justify-content-center mb-4">
-        <div *ngIf="user.role === 'chef'" class="col-md-4 mb-3">
-            <!-- Recipe Actions (chef only) -->
+        @if (user.role === 'chef') {
+        <!-- Recipe Actions (chef only) -->
+        <div class="col-md-4 mb-3">
             <div class="card border-primary h-100">
                 <div class="card-header bg-primary text-white fw-bold text-center">
                     Recipe Actions
@@ -105,6 +106,7 @@
                 </div>
             </div>
         </div>
+        }
         <!-- Inventory Actions (shared) -->
         <div class="col-md-4 mb-3">
             <div class="card border-success h-100">
@@ -132,7 +134,8 @@
             </div>
         </div>
         <!-- Report Actions (admin only) -->
-        <div *ngIf="user.role === 'admin'" class="col-md-4 mb-3">
+        @if (user.role === 'admin') {
+        <div class="col-md-4 mb-3">
             <div class="card border-info h-100">
                 <div class="card-header bg-info text-white fw-bold text-center">
                     Report Actions
@@ -145,6 +148,7 @@
                 </div>
             </div>
         </div>
+        }
     </div>
 </div>
 

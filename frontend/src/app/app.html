@@ -11,42 +11,58 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          @if (user) {
+          @if (user.role === 'chef') {
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="recipesDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               Recipes
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/recipe/recipes-33810672">My Recipes</a></li>
-              <li><a class="dropdown-item" href="/recipe/add-33810672">Add Recipe</a></li>
-              <li><a class="dropdown-item" href="/recipe/availability-33810672">Recipe Availability</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/recipe/recipes-33810672']">My Recipes</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/recipe/add-33810672']">Add Recipe</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/recipe/availability-33810672']">Recipe
+                  Availability</a></li>
             </ul>
           </li>
+          }
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               Inventory
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/inventory/inventories-33810672">List Inventory</a></li>
-              <li><a class="dropdown-item" href="/inventory/add-33810672">Add Inventory</a></li>
-              <li><a class="dropdown-item" href="/inventory/alerts-33810672">Inventory Alerts</a></li>
-              <li><a class="dropdown-item" href="/inventory/insights-33810672">Inventory Insights</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/inventory/inventories-33810672']">List
+                  Inventory</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/inventory/add-33810672']">Add Inventory</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/inventory/alerts-33810672']">Inventory
+                  Alerts</a>
+              </li>
+              <li><a class="dropdown-item" [routerLink]="['/inventory/insights-33810672']">Inventory
+                  Insights</a></li>
             </ul>
           </li>
+          @if (user.role === 'admin') {
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
               Reports
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/report/analytics-33810672">View Reports</a></li>
+              <li><a class="dropdown-item" [routerLink]="['/report/analytics-33810672']">View Reports</a>
+              </li>
             </ul>
           </li>
+          }
+          }
         </ul>
         <div class="d-flex align-items-center">
-          <span class="navbar-text me-3 d-none d-lg-block" style="font-weight:500;">Welcome, User</span>
-          <a href="/user/logout-33810672" class="btn btn-outline-danger btn-md">Logout</a>
+          @if (user) {
+          <span class="navbar-text me-3 d-none d-lg-block" style="font-weight:500;">Welcome, {{user.fullname}}</span>
+          <button (click)="logout()" class="btn btn-outline-danger btn-md">Logout</button>
+          } @else {
+          <a href="/user/login-33810672" class="btn btn-dark btn-md">Get Started</a>
+          }
         </div>
       </div>
     </div>
@@ -55,19 +71,21 @@
 
 <router-outlet></router-outlet>
 
-<footer class="footer mt-auto py-4 bg-light border-top">
-  <div class="container text-center">
-    <div class="row">
-      <div class="col-md-4 mb-2 mb-md-0">
-        <h5 class="mb-1">CloudKitchen Pro</h5>
-        <small class="text-muted">Professional Kitchen Management System</small>
-      </div>
-      <div class="col-md-4 mb-2 mb-md-0 d-flex flex-column justify-content-center align-items-center">
-        <span class="text-muted">Built with <span style="color:#e25555;">&#10084;&#65039;</span> by Viet Tran
-          (33810672)</span>
-      </div>
-      <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
-        <small class="text-muted">&copy; 2025 CloudKitchen Pro - FIT2095 Assignment 2<br>Monash University</small>
+<footer>
+  <div class="footer mt-auto py-4 bg-light border-top">
+    <div class="container text-center">
+      <div class="row">
+        <div class="col-md-4 mb-2 mb-md-0">
+          <h5 class="mb-1">CloudKitchen Pro</h5>
+          <small class="text-muted">Professional Kitchen Management System</small>
+        </div>
+        <div class="col-md-4 mb-2 mb-md-0 d-flex flex-column justify-content-center align-items-center">
+          <span class="text-muted">Built with <span style="color:#e25555;">&#10084;&#65039;</span> by Viet Tran
+            (33810672)</span>
+        </div>
+        <div class="col-md-4 d-flex flex-column justify-content-center align-items-center">
+          <small class="text-muted">&copy; 2025 CloudKitchen Pro - FIT2095 Assignment 3<br>Monash University</small>
+        </div>
       </div>
     </div>
   </div>

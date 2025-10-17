@@ -1,16 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Database } from '../../services/database';
 import { interval, Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit, OnDestroy {
+export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   msg: string = '';
   user: any = {};
   stats: any = {};
@@ -28,10 +27,12 @@ export class Dashboard implements OnInit, OnDestroy {
       }
     });
 
-    // Load dashboard data
+    // Load dashboard data immediately on init
     this.loadDashboardData();
+  }
 
-    // Set up real-time updates every 30 seconds
+  ngAfterViewInit() {
+    // Set up real-time updates every 30 seconds after view initializes
     this.refreshSubscription = interval(30000).subscribe(() => {
       this.loadDashboardData();
     });

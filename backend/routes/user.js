@@ -94,8 +94,17 @@ router.post(`/login-${STUDENT_ID}`, async (req, res) => {
         user.isLoggedIn = true;
         await user.save();
 
-        // Return success JSON with userId and message
-        return res.status(200).json({ message: 'Successfully logged in', userId: user.userId });
+        // Return success JSON with userId, message, and user object
+        return res.status(200).json({
+            message: 'Successfully logged in',
+            userId: user.userId,
+            user: {
+                userId: user.userId,
+                fullname: user.fullname,
+                email: user.email,
+                role: user.role
+            }
+        });
     } catch (err) {
         console.error('Login error:', err);
         return res.status(500).json({ errors: ['An error occurred during login.'] });

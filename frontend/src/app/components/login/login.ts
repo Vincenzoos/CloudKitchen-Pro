@@ -47,6 +47,10 @@ export class Login implements OnInit {
         console.log('Login successful:', response);
         // Store userId in localStorage
         localStorage.setItem('userId', response.userId);
+        // Store user object in localStorage
+        localStorage.setItem('user', JSON.stringify(response.user));
+        // Dispatch custom event to notify App component
+        window.dispatchEvent(new Event('userUpdated'));
         // Set success message and show toast
         this.msg = response.message || 'Successfully logged in!';
         this.showToast();
