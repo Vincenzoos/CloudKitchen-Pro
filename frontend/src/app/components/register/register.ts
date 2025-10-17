@@ -34,9 +34,8 @@ export class Register {
     // Call register API
     this.database.registerUser(this.formData).subscribe({
       next: (response) => {
-        // On success, redirect to login or dashboard
-        // this.router.navigate(['/login-33810672']);
-        this.router.navigate(['/dashboard-33810672']);
+        // On success, redirect to login
+        this.router.navigate(['/login-33810672']);
       },
       error: (err) => {
         console.error('Registration error:', err);

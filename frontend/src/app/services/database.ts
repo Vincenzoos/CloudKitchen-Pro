@@ -16,8 +16,20 @@ export class Database {
   constructor(private http: HttpClient) { }
 
   // Add backend API calls here
+  // Register user - returns observable of backend response
   registerUser(data: any) {
     console.log("Registering user with data:", data);
     return this.http.post(`${BASE_API_URL}/user/register-${STUDENT_ID}`, data, httpOptions);
+  }
+
+  // Login user - returns observable of backend response
+  loginUser(data: { email: string; password: string }) {
+    console.log('Logging in with', data.email);
+    return this.http.post(`${BASE_API_URL}/user/login-${STUDENT_ID}`, data, httpOptions);
+  }
+
+  // Logout user - expects userId in query string
+  logoutUser(userId: string) {
+    return this.http.get(`${BASE_API_URL}/user/logout-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`);
   }
 }
