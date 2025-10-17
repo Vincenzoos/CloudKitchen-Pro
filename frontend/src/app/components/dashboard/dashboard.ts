@@ -1,16 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Database } from '../../services/database';
+import { interval, Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, OnDestroy {
   msg: string = '';
+  user: any = {};
+  stats: any = {};
+  student: any = {};
+  private refreshSubscription?: Subscription;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private database: Database) { }
 
   ngOnInit() {
     // Check for success message from login
@@ -20,6 +27,36 @@ export class Dashboard implements OnInit {
         this.showToast();
       }
     });
+
+    // Load dashboard data
+    this.loadDashboardData();
+
+    // Set up real-time updates every 30 seconds
+    this.refreshSubscription = interval(30000).subscribe(() => {
+      this.loadDashboardData();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+  }
+
+  private loadDashboardData() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.database.getDashboardData(userId).subscribe({
+        next: (response: any) => {
+          this.user = response.user;
+          this.stats = response.stats;
+          this.student = response.student;
+        },
+        error: (err) => {
+          console.error('Failed to load dashboard data:', err);
+        }
+      });
+    }
   }
 
   private showToast() {

@@ -32,4 +32,9 @@ export class Database {
   logoutUser(userId: string) {
     return this.http.get(`${BASE_API_URL}/user/logout-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`);
   }
+
+  // Get dashboard data
+  getDashboardData(userId: string) {
+    return this.http.get(`${BASE_API_URL}/user/dashboard-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`);
+  }
 }

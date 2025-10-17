@@ -14,3 +14,155 @@
         </div>
     </div>
 </div>
+
+<!-- Body -->
+<!-- Banner -->
+<div class="banner-hero d-flex flex-column align-items-center justify-content-center text-center">
+    <h1 class="display-1 fw-bold banner-title mt-5">CloudKitchen Pro</h1>
+    <p class="lead banner-subtitle">
+        Your Smart Companion for Healthy & Zesty Living!
+    </p>
+    <!-- Student Info -->
+    <div class="card bg-transparent text-dark mb-3 shadow" style="border-radius: 1rem; background-color: transparent;">
+        <div class="card-body">
+            <h5 class="card-title">Student ID: {{ student.id }}</h5>
+            <p class="card-text">Student Name: {{ student.name }}</p>
+        </div>
+    </div>
+    <!-- Styled welcome card -->
+    <div class="card bg-transparent text-dark mb-4 shadow"
+        style="border-radius: 1rem; width: 30%; background-color: transparent;">
+        <div class="card-body">
+            <h2 class="card-title">Welcome back, {{ user.fullname }}!</h2>
+            <ul class="list-unstyled mb-0">
+                <li><strong>User ID:</strong>
+                    {{ user.userId }}
+                </li>
+                <li><strong>Email:</strong>
+                    {{ user.email }}
+                </li>
+                <li><strong>Role:</strong> <span class="badge bg-secondary">
+                        {{ user.role }}
+                    </span></li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <a href="#quick-actions" class="btn btn-danger btn-lg px-4 me-3 banner-btn">Get Started</a>
+    </div>
+</div>
+<div class="container main-content">
+    <!-- Quick Look Cards -->
+    <div class="container">
+        <h2 class="text-center">Your CloudKitchen Pro at a Glance</h2>
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card text-bg-primary text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title display-5 fw-normal">
+                            {{ stats.userCount }}
+                        </h5>
+                        <p class="card-text">Total Users</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-bg-success text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title display-5 fw-normal">
+                            {{ stats.recipeCount }}
+                        </h5>
+                        <p class="card-text">Total Recipes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-bg-warning text-center h-100">
+                    <div class="card-body">
+                        <h5 class="card-title display-5 fw-normal">
+                            {{ stats.inventoryCount }}
+                        </h5>
+                        <p class="card-text">Total Inventory</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Quick Actions -->
+    <h2 class="text-center mt-5" id="quick-actions">Quick Actions</h2>
+    <div class="row justify-content-center mb-4">
+        <div *ngIf="user.role === 'chef'" class="col-md-4 mb-3">
+            <!-- Recipe Actions (chef only) -->
+            <div class="card border-primary h-100">
+                <div class="card-header bg-primary text-white fw-bold text-center">
+                    Recipe Actions
+                </div>
+                <div class="card-body text-center">
+                    <a href="/recipe/add-33810672?userId={{ user.userId }}" class="btn btn-outline-primary w-100 mb-2">
+                        Add New Recipe
+                    </a>
+                    <a href="/recipe/recipes-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-primary w-100 mb-2">
+                        My Recipes
+                    </a>
+                    <a href="/recipe/availability-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-primary w-100 mb-2">
+                        Recipe Availability
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Inventory Actions (shared) -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-success h-100">
+                <div class="card-header bg-success text-white fw-bold text-center">
+                    Inventory Actions
+                </div>
+                <div class="card-body text-center">
+                    <a href="/inventory/add-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-success w-100 mb-2">
+                        Add Inventory Item
+                    </a>
+                    <a href="/inventory/inventories-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-success w-100 mb-2">
+                        View All Inventory
+                    </a>
+                    <a href="/inventory/alerts-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-success w-100 mb-2">
+                        Inventory Alerts
+                    </a>
+                    <a href="/inventory/insights-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-success w-100 mb-2">
+                        Inventory Insights
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Report Actions (admin only) -->
+        <div *ngIf="user.role === 'admin'" class="col-md-4 mb-3">
+            <div class="card border-info h-100">
+                <div class="card-header bg-info text-white fw-bold text-center">
+                    Report Actions
+                </div>
+                <div class="card-body text-center">
+                    <a href="/report/analytics-33810672?userId={{ user.userId }}"
+                        class="btn btn-outline-info w-100 mb-2">
+                        View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS scripts -->
+<script>
+    // Toast Notification auto dismiss
+    document.addEventListener('DOMContentLoaded', function () {
+        var toastEl = document.getElementById('msgToast');
+        if (toastEl && toastEl.querySelector('.toast-body').textContent.trim() !== '') {
+            var toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+            toast.show();
+        }
+    });
+</script>

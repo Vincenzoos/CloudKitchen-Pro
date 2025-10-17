@@ -44,6 +44,8 @@ export class Login implements OnInit {
     // Call login API
     this.database.loginUser(this.formData).subscribe({
       next: (response: any) => {
+        // Store userId in localStorage
+        localStorage.setItem('userId', response.userId);
         // Set success message and show toast
         this.msg = response.message || 'Successfully logged in!';
         this.showToast();
