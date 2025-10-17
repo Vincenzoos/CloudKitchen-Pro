@@ -1,1 +1,80 @@
-<p>register works!</p>
+<!-- Body -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow" style="border-radius:1.5rem;">
+                <div class="card-header bg-dark text-white" style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h2 class="mt-2">Register</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Display errors if any -->
+                    @if (error) {
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                    }
+                    @if (errors && errors.length) {
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @for (e of errors; track e) {
+                            <li>
+                                {{ e }}
+                            </li>
+                            }
+                        </ul>
+                    </div>
+                    }
+
+                    <form class="row g-4" id="registerForm" (ngSubmit)="onSubmit()">
+                        <div class="col-md-6">
+                            <label class="form-label" for="email">Email Address *</label>
+                            <input class="form-control" id="email" name="email" type="email"
+                                pattern="^\w+([\.\-]?\w+)*@\w+([\.\-]?\w+)*(\.\w{2,3})+$"
+                                title="Please enter a valid email address (e.g., example@mail.com)"
+                                [(ngModel)]="formData.email" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="password">Password *</label>
+                            <input class="form-control" id="password" name="password" type="password" minlength="8"
+                                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$"
+                                title="Password must be at least 8 characters long, with uppercase, lowercase, a number, and a special character"
+                                [(ngModel)]="formData.password" required />
+                            <small class="form-text text-muted">Must be at least 8 characters with
+                                uppercase, lowercase, number, and special character</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="fullname">Full Name *</label>
+                            <input class="form-control" id="fullname" name="fullname" type="text"
+                                pattern="^[a-zA-Z\s\-']+$" minlength="2" maxlength="100"
+                                title="Full name must only contain letters, spaces, hyphens, and apostrophes"
+                                [(ngModel)]="formData.fullname" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="role">Role *</label>
+                            <select class="form-select" id="role" name="role" [(ngModel)]="formData.role" required>
+                                <option value="">Select role</option>
+                                <option value="admin">Admin</option>
+                                <option value="chef">Chef</option>
+                                <option value="manager">Manager</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label" for="phone">Phone Number *</label>
+                            <input class="form-control" id="phone" name="phone" type="text"
+                                pattern="^\+61 4\d{2} \d{3} \d{3}$"
+                                title="Phone number must follow the format: +61 4xx xxx xxx"
+                                placeholder="+61 4xx xxx xxx" maxlength="15" (input)="formatPhoneNumber($event)"
+                                [(ngModel)]="formData.phone" required />
+                        </div>
+                        <div class="col-12 d-flex justify-content-center mt-4 gap-2">
+                            <button class="btn btn-dark px-5" type="submit">Register</button>
+                        </div>
+                        <div class="col-12 d-flex justify-content-center mt-4 gap-2">
+                            <p>Already have an account? <a routerLink="/login">Login here</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
