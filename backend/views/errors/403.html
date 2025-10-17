@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Forbidden (403) - CloudKitchen Pro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9f9f9; color: #333; }
+        .container { max-width: 500px; margin: 80px auto; padding: 2em; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #eee; text-align: center; }
+        h1 { color: #f0ad4e; }
+        a { color: #337ab7; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>403 Forbidden</h1>
+        <p>
+            You do not have permission to access this page.
+        </p>
+        <a href="/<%= userId ? '?userId=' + userId : '' %>">Return to Home</a>
+    </div>
+</body>
+</html>

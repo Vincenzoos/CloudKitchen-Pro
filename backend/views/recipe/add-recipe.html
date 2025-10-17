@@ -1,0 +1,132 @@
+<!-- Header -->
+<%- include('../partials/header', { title: title, isLoggedIn: true, user: user }) %>
+
+<!-- Body -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow" style="border-radius:1.5rem;">
+                <div class="card-header bg-primary text-white" style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h2 class="mt-2">➕ Add New Recipe</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Display errors if any -->
+                    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <% errors.forEach(function(error) { %>
+                                    <li><%= error %></li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    <% } %>
+                    <form class="row g-4" action="/recipe/add-<%= STUDENT_ID %>?userId=<%= user.userId %>" method="POST">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <!-- Title Input -->
+                            <label for="title" class="form-label">Recipe Title</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Chocolate Chip Cookies" required
+                                value="<%= formData.title || '' %>"
+                                minlength="3" maxlength="100"
+                                >
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Chef Name Input -->
+                            <label for="chef" class="form-label">Chef Name</label>
+                            <input type="text" class="form-control" id="chef" name="chef" placeholder="e.g., John Smith" disabled
+                                value="<%= formData.chef || user.fullname %>">
+                            <!-- Hidden input to submit chef value since disabled fields are not submitted -->
+                            <input type="hidden" name="chef" value="<%= formData.chef || user.fullname %>">
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Prep Time Input -->
+                            <label for="prep-time" class="form-label">Preparation Time (minutes)</label>
+                            <input type="number" class="form-control" id="prep-time" name="prep-time" min="1" placeholder="e.g., 30" required
+                                value="<%= formData['prep-time'] || '' %>"
+                                min="1" max="480"
+                                >
+                        </div>
+
+                        <!-- Recipe Details -->
+                        <div class="col-md-6">
+                            <!-- Meal Type Dropdown -->
+                            <label for="meal-type" class="form-label">Meal Type</label>
+                            <select class="form-select" id="meal-type" name="meal-type" required>
+                                <option value="">Choose...</option>
+                                <% MEAL_TYPES.forEach(type => { %>
+                                    <option value="<%= type %>" <%= formData['meal-type'] === type ? 'selected' : '' %>>
+                                        <%= type.charAt(0).toUpperCase() + type.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Cuisine Type Dropdown -->
+                            <label for="cuisine-type" class="form-label">Cuisine Type</label>
+                            <select class="form-select" id="cuisine-type" name="cuisine-type" required>
+                                <option value="">Choose...</option>
+                                <% CUISINE_TYPES.forEach(type => { %>
+                                    <option value="<%= type %>" <%= formData['cuisine-type'] === type ? 'selected' : '' %>>
+                                        <%= type.charAt(0).toUpperCase() + type.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Difficulty Dropdown -->
+                            <label for="difficulty" class="form-label">Difficulty</label>
+                            <select class="form-select" id="difficulty" name="difficulty" required>
+                                <option value="">Choose...</option>
+                                <% DIFFICULTY_TYPES.forEach(type => { %>
+                                    <option value="<%= type %>" <%= formData.difficulty === type ? 'selected' : '' %>>
+                                        <%= type.charAt(0).toUpperCase() + type.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Servings Input -->
+                            <label for="servings" class="form-label">Servings</label>
+                            <input type="number" class="form-control" id="servings" name="servings" min="1" placeholder="e.g., 4" required
+                                value="<%= formData.servings || '' %>"
+                                min="1" max="20"
+                                >
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="col-12">
+                            <label for="ingredients" class="form-label">Ingredients (one per line)</label>
+                            <textarea class="form-control" id="ingredients" name="ingredients" rows="5" required
+                                placeholder="Enter each ingredient on a separate line"><%= formData.ingredients || '' %></textarea>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="col-12">
+                            <label for="instructions" class="form-label">Instructions (one per line)</label>
+                            <textarea class="form-control" id="instructions" name="instructions" rows="5" required
+                                placeholder="Enter step-by-step instructions separated by new lines"><%= formData.instructions || '' %></textarea>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 d-flex justify-content-center mt-4 gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Add Recipe
+                            </button>
+                            <a href="/recipe/recipes-<%= STUDENT_ID %>?userId=<%= user.userId %>" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<%- include('../partials/footer') %>

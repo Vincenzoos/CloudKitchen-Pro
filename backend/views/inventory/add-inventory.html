@@ -1,0 +1,129 @@
+<!-- Header -->
+<%- include('../partials/header',  { title: title, isLoggedIn: true, user: user }) %>
+
+<!-- Body -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow" style="border-radius:1.5rem;">
+                <div class="card-header bg-success text-white" style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h2 class="mt-2">➕ Add New Inventory Item</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Display errors if any -->
+                    <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <% errors.forEach(function(error) { %>
+                                    <li><%= error %></li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    <% } %>
+                    <form class="row g-4" action="/inventory/add-<%= STUDENT_ID %>?userId=<%= user.userId %>" method="POST">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <h5 class="mb-0"><span role="img" aria-label="info">ℹ️</span> Basic Information</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ingredientName">Ingredient Name *</label>
+                            <input class="form-control" type="text" id="name" name="ingredientName" placeholder="e.g., All-purpose flour" required
+                                value="<%= formData && formData.ingredientName ? formData.ingredientName : '' %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="category">Food Category *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="" disabled selected>Select a category...</option>
+                                <% ALLOWED_CATEGORIES.forEach(category => { %>
+                                    <option value="<%= category %>" <%= formData && formData['category'] === category ? 'selected' : '' %>>
+                                        <%= category.charAt(0).toUpperCase() + category.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Quantity & Measurement -->
+                        <div class="col-12">
+                            <h5 class="mb-0 mt-2"><span role="img" aria-label="scale">⚖️</span> Quantity & Measurement</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="quantity">Quantity *</label>
+                            <input class="form-control" type="number" id="quantity" name="quantity" 
+                            min="0.1" 
+                            step="0.01" 
+                            max="9999"
+                            placeholder="Enter quantity" required
+                                value="<%= formData && formData.quantity ? formData.quantity : '' %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="unit-measurement">Unit of Measurement *</label>
+                            <select class="form-select" id="unit-measurement" name="unit-measurement" required>
+                                <option value="" disabled selected>Select unit...</option>
+                                <% ALLOWED_UNITS.forEach(unit => { %>
+                                    <option value="<%= unit %>" <%= formData && formData['unit-measurement'] === unit ? 'selected' : '' %>>
+                                        <%= unit.charAt(0).toUpperCase() + unit.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="col-12">
+                            <h5 class="mb-0 mt-2"><span role="img" aria-label="calendar">📅</span> Dates</h5>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label" for="purchase-date">Date of Purchase *</label>
+                            <input class="form-control" type="date" name="purchase-date" id="purchase-date" required
+                                max="<%= (new Date()).toISOString().split('T')[0] %>"
+                                value="<%= formData && formData['purchase-date'] ? formData['purchase-date'] : (new Date()).toISOString().split('T')[0] %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="expiration-date">Date of Expiration *</label>
+                            <input class="form-control" type="date" name="expiration-date" id="expiration-date" required
+                                value="<%= formData && formData['expiration-date'] ? formData['expiration-date'] : (new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0] %>">
+                        </div>
+
+                        <!-- Storage & Cost -->
+                        <div class="col-12">
+                            <h5 class="mt-2 mb-0"><span role="img" aria-label="money">💲</span> Cost</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="location">Storage Location *</label>
+                            <select class="form-select" id="location" name="location" required>
+                                <option value="" disabled selected>Select location...</option>
+                                <% ALLOWED_LOCATIONS.forEach(location => { %>
+                                    <option value="<%= location %>" <%= formData && formData['location'] === location ? 'selected' : '' %>>
+                                        <%= location.charAt(0).toUpperCase() + location.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="purchase-cost">Purchase Cost (AUD) *</label>
+                            <input class="form-control" type="number" id="purchase-cost" name="purchase-cost" 
+                            min="0.1" 
+                            step="0.01"
+                            max="999.99"
+                            placeholder="Enter purchase cost" required
+                                value="<%= formData && formData['purchase-cost'] ? formData['purchase-cost'] : '' %>">
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 d-flex justify-content-center mt-4 gap-2">
+                            <button class="btn btn-success px-5" type="submit">
+                                Add Inventory
+                            </button>
+                            <a href="/inventory/inventories-<%= STUDENT_ID %>?userId=<%= user.userId %>" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<%- include('../partials/footer') %>
