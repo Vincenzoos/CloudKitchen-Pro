@@ -26,7 +26,10 @@ router.post(`/register-${STUDENT_ID}`, userValidationMiddleware, async (req, res
         // Check if user already exists by email, return conflict if so
         const exists = await User.findOne({ email: data.email });
         // status 409: Conflict
-        if (exists) return res.status(409).json({ error: 'Email already registered' });
+        if (exists) {
+            console.warn(`Registration failed: Email ${data.email} already registered.`);
+            return res.status(409).json({ error: 'Email already registered' });
+        }
 
         // Create and save new user
         const newUser = new User(data);

@@ -20,12 +20,14 @@ export class Register {
   };
   error: string = '';
   errors: string[] = [];
+  msg: string = '';
 
   constructor(private database: Database, private router: Router) { }
 
   onSubmit() {
     this.error = '';
     this.errors = [];
+
     // Basic validation
     if (!this.formData.email || !this.formData.password || !this.formData.fullname || !this.formData.role || !this.formData.phone) {
       this.errors.push('All fields are required');
@@ -33,17 +35,37 @@ export class Register {
     }
     // Call register API
     this.database.registerUser(this.formData).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         // On success, redirect to login
-        this.router.navigate(['/login-33810672']);
+        // Set success message and show toast
+        this.msg = response.message || 'Successfully registered!';
+        this.showToast();
+
+        // Navigate to login after a short (2s) delay to show the toast
+        setTimeout(() => {
+          this.router.navigate(['/user/login-33810672'], {
+            queryParams: { message: this.msg }
+          });
+        }, 2000);
       },
       error: (err) => {
         console.error('Registration error:', err);
-        this.error = err.error?.message || 'Registration failed, please try again.';
+        // Handle different error response formats
+        if (err.error?.errors && Array.isArray(err.error.errors)) {
+          // Validation errors (array)
+          this.errors = err.error.errors;
+        } else if (err.error?.error) {
+          // Single error message
+          this.error = err.error.error;
+        } else {
+          // Fallback
+          this.error = 'Registration failed, please try again.';
+        }
       }
     });
   }
 
+  // Phone number formatting for Australian numbers
   formatPhoneNumber(event: any) {
     const input = event.target;
     // Remove all non-digit characters except the '+' sign
@@ -62,5 +84,18 @@ export class Register {
     input.value = phone.trim();
     // Update the model
     this.formData.phone = phone.trim();
+  }
+
+  // Show toast message
+  private showToast() {
+    setTimeout(() => {
+      const toastEl = document.getElementById('msgToast');
+      if (toastEl && this.msg.trim() !== '') {
+        // Using Bootstrap's Toast API
+        // @ts-ignore - Bootstrap types may not be available
+        const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+        toast.show();
+      }
+    }, 100);
   }
 }
