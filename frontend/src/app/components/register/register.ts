@@ -36,17 +36,15 @@ export class Register {
     // Call register API
     this.database.registerUser(this.formData).subscribe({
       next: (response: any) => {
-        // On success, redirect to login
-        // Set success message and show toast
+        // On success, redirect to login with success message
+        // Set success message
+        console.log('Registration successful:', response);
         this.msg = response.message || 'Successfully registered!';
-        this.showToast();
 
-        // Navigate to login after a short (2s) delay to show the toast
-        setTimeout(() => {
-          this.router.navigate(['/user/login-33810672'], {
-            queryParams: { message: this.msg }
-          });
-        }, 2000);
+        // Redirect to login with message
+        this.router.navigate(['/user/login-33810672'], {
+          queryParams: { message: this.msg }
+        });
       },
       error: (err) => {
         console.error('Registration error:', err);
@@ -86,16 +84,4 @@ export class Register {
     this.formData.phone = phone.trim();
   }
 
-  // Show toast message
-  private showToast() {
-    setTimeout(() => {
-      const toastEl = document.getElementById('msgToast');
-      if (toastEl && this.msg.trim() !== '') {
-        // Using Bootstrap's Toast API
-        // @ts-ignore - Bootstrap types may not be available
-        const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
-        toast.show();
-      }
-    }, 100);
-  }
 }

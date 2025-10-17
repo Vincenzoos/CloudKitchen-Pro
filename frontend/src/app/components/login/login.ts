@@ -48,10 +48,10 @@ export class Login implements OnInit {
         this.msg = response.message || 'Successfully logged in!';
         this.showToast();
 
-        // Navigate to dashboard after a short delay to show the toast
-        setTimeout(() => {
-          this.router.navigate(['/dashboard-33810672']);
-        }, 2000);
+        // Navigate to dashboard with message
+        this.router.navigate(['/dashboard-33810672'], {
+          queryParams: { message: this.msg }
+        });
       },
       error: (err) => {
         console.error('Authentication error:', err);
@@ -71,14 +71,24 @@ export class Login implements OnInit {
   }
 
   private showToast() {
-    setTimeout(() => {
-      const toastEl = document.getElementById('msgToast');
-      if (toastEl && this.msg.trim() !== '') {
-        // Using Bootstrap's Toast API
-        // @ts-ignore - Bootstrap types may not be available
+    console.log('Login showToast called with message:', this.msg);
+    const toastEl = document.getElementById('msgToast');
+    console.log('Login toast element found:', !!toastEl);
+
+    if (toastEl && this.msg.trim() !== '') {
+      // Using Bootstrap's Toast API
+      const bootstrap = (window as any).bootstrap;
+      console.log('Login Bootstrap available:', !!bootstrap);
+
+      if (bootstrap && bootstrap.Toast) {
         const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
         toast.show();
+        console.log('Login toast shown');
+      } else {
+        console.warn('Bootstrap Toast not available');
       }
-    }, 100);
+    } else {
+      console.warn('Toast element not found');
+    }
   }
 }
