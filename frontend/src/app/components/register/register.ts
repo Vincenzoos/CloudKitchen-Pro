@@ -40,7 +40,7 @@ export class Register {
       },
       error: (err) => {
         console.error('Registration error:', err);
-        this.error = err.error?.message || 'Registration failed';
+        this.error = err.error?.message || 'Registration failed, please try again.';
       }
     });
   }

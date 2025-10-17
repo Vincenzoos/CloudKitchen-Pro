@@ -25,38 +25,52 @@
                     </div>
                     }
 
-                    <form class="row g-4" id="registerForm" (ngSubmit)="onSubmit()">
+                    <form class="row g-4" id="registerForm" (ngSubmit)="onSubmit()" #registerForm="ngForm">
                         <div class="col-md-6">
                             <label class="form-label" for="email">Email Address *</label>
                             <input class="form-control" id="email" name="email" type="email"
                                 pattern="^\w+([\.\-]?\w+)*@\w+([\.\-]?\w+)*(\.\w{2,3})+$"
                                 title="Please enter a valid email address (e.g., example@mail.com)"
-                                [(ngModel)]="formData.email" required />
+                                [(ngModel)]="formData.email" #email="ngModel" required />
+                            @if (email.invalid && email.touched) {
+                            <small class="form-text text-danger">Please enter a valid email address (e.g.,
+                                example@mail.com)</small>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="password">Password *</label>
                             <input class="form-control" id="password" name="password" type="password" minlength="8"
                                 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$"
                                 title="Password must be at least 8 characters long, with uppercase, lowercase, a number, and a special character"
-                                [(ngModel)]="formData.password" required />
-                            <small class="form-text text-muted">Must be at least 8 characters with
+                                [(ngModel)]="formData.password" #password="ngModel" required />
+                            @if (password.invalid && password.touched) {
+                            <small class="form-text text-danger">Must be at least 8 characters with
                                 uppercase, lowercase, number, and special character</small>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="fullname">Full Name *</label>
                             <input class="form-control" id="fullname" name="fullname" type="text"
                                 pattern="^[a-zA-Z\s\-']+$" minlength="2" maxlength="100"
                                 title="Full name must only contain letters, spaces, hyphens, and apostrophes"
-                                [(ngModel)]="formData.fullname" required />
+                                [(ngModel)]="formData.fullname" #fullname="ngModel" required />
+                            @if (fullname.invalid && fullname.touched) {
+                            <small class="form-text text-danger">Must be at least 2 characters long and can only contain
+                                letters, spaces, hyphens, and apostrophes</small>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="role">Role *</label>
-                            <select class="form-select" id="role" name="role" [(ngModel)]="formData.role" required>
+                            <select class="form-select" id="role" name="role" [(ngModel)]="formData.role"
+                                #role="ngModel" required>
                                 <option value="">Select role</option>
                                 <option value="admin">Admin</option>
                                 <option value="chef">Chef</option>
                                 <option value="manager">Manager</option>
                             </select>
+                            @if (role.invalid && role.touched) {
+                            <small class="form-text text-danger">Please select a role</small>
+                            }
                         </div>
                         <div class="col-md-12">
                             <label class="form-label" for="phone">Phone Number *</label>
@@ -64,7 +78,10 @@
                                 pattern="^\+61 4\d{2} \d{3} \d{3}$"
                                 title="Phone number must follow the format: +61 4xx xxx xxx"
                                 placeholder="+61 4xx xxx xxx" maxlength="15" (input)="formatPhoneNumber($event)"
-                                [(ngModel)]="formData.phone" required />
+                                [(ngModel)]="formData.phone" #phone="ngModel" required />
+                            @if (phone.invalid && phone.touched) {
+                            <small class="form-text text-danger">Must be in the format: +61 4xx xxx xxx</small>
+                            }
                         </div>
                         <div class="col-12 d-flex justify-content-center mt-4 gap-2">
                             <button class="btn btn-dark px-5" type="submit">Register</button>
