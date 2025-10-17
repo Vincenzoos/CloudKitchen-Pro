@@ -35,6 +35,6 @@ export class Database {
 
   // Get dashboard data
   getDashboardData(userId: string) {
-    return this.http.get(`${BASE_API_URL}/user/dashboard-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`);
+    return this.http.get(`${BASE_API_URL}/?userId=${encodeURIComponent(userId)}`);
   }
 }

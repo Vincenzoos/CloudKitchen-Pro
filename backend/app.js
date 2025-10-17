@@ -65,19 +65,61 @@ app.use(dbCheck);
 // HOME ROUTE
 // ============================================
 
-app.get('/', requireLogin, async (req, res) => {
-    // Fetch counts for dashboard display
-    const userCount = await User.find().countDocuments();
-    let recipeCount = await Recipe.find().countDocuments();
-    const inventoryCount = await Inventory.find().countDocuments();
-    const userRole = req.user.role;
+// app.get('/', requireLogin, async (req, res) => {
+//     // Fetch counts for dashboard display
+//     const userCount = await User.find().countDocuments();
+//     let recipeCount = await Recipe.find().countDocuments();
+//     const inventoryCount = await Inventory.find().countDocuments();
+//     const userRole = req.user.role;
 
-    if (userRole === 'chef') {
-        // If logged in user is a chef, dashboard total recipes is only their own
-        recipeCount = await Recipe.find({ userId: req.user.userId }).countDocuments();
+//     if (userRole === 'chef') {
+//         // If logged in user is a chef, dashboard total recipes is only their own
+//         recipeCount = await Recipe.find({ userId: req.user.userId }).countDocuments();
+//     }
+//     res.render('index', { title: 'Home - CloudKitchen Pro', isLoggedIn: true, user: req.user, userCount, recipeCount, inventoryCount, msg: req.query.msg || '' });
+// });
+
+app.get(`/api`, requireLogin, async (req, res) => {
+    const { userId } = req.query;
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID required' });
     }
-    res.render('index', { title: 'Home - CloudKitchen Pro', isLoggedIn: true, user: req.user, userCount, recipeCount, inventoryCount, msg: req.query.msg || '' });
+    try {
+        const user = await User.findOne({ userId });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        // Fetch counts
+        const userCount = await User.find().countDocuments();
+        let recipeCount = await Recipe.find().countDocuments();
+        const inventoryCount = await Inventory.find().countDocuments();
+        if (user.role === 'chef') {
+            recipeCount = await Recipe.find({ userId: user.userId }).countDocuments();
+        }
+        // Return dashboard data
+        return res.json({
+            user: {
+                userId: user.userId,
+                fullname: user.fullname,
+                email: user.email,
+                role: user.role
+            },
+            stats: {
+                userCount,
+                recipeCount,
+                inventoryCount
+            },
+            student: {
+                id: STUDENT_ID,
+                name: STUDENT_NAME
+            }
+        });
+    } catch (err) {
+        console.error('Dashboard error:', err);
+        return res.status(500).json({ error: 'Failed to load dashboard' });
+    }
 });
+
 
 // ============================================
 // USER ROUTE

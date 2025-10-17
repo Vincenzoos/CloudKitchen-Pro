@@ -45,6 +45,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private loadDashboardData() {
     const userId = localStorage.getItem('userId');
+    console.log('Logged in userId:', userId);
     if (userId) {
       this.database.getDashboardData(userId).subscribe({
         next: (response: any) => {
