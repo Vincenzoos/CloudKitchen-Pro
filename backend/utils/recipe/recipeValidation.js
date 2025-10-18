@@ -59,8 +59,19 @@ function validateAndParseRecipeData(body) {
         errors.push("Chef name can only contain letters, spaces, hyphens, and apostrophes.");
     }
 
-    // Ingredients: split by newlines, 1-20 items, each >=3 chars, match regex
-    const ingredientsArr = ingredients ? ingredients.split('\n').map(i => i.trim()).filter(Boolean) : [];
+    // Ingredients: expect array of strings, 1-20 items, each >=3 chars, match regex
+    let ingredientsArr = [];
+    if (Array.isArray(ingredients)) {
+        ingredientsArr = ingredients.map(i => i.trim()).filter(Boolean);
+    } else if (typeof ingredients === 'string') {
+        // Fallback for string input (split by newlines)
+        ingredientsArr = ingredients.split('\n').map(i => i.trim()).filter(Boolean);
+    } else {
+        // Handle case where ingredients is undefined, null, or other type
+        console.error('Invalid ingredients type:', typeof ingredients, ingredients);
+        errors.push("Ingredients must be provided as text or array.");
+    }
+
     if (ingredientsArr.length < MIN_INGREDIENT_COUNT) {
         errors.push("At least one ingredient is required.");
     } else if (ingredientsArr.length > MAX_INGREDIENT_COUNT) {
@@ -75,8 +86,15 @@ function validateAndParseRecipeData(body) {
         });
     }
 
-    // Instructions: split by newlines, 1-15 items, each >=10 chars
-    const instructionsArr = instructions ? instructions.split('\n').map(i => i.trim()).filter(Boolean) : [];
+    // Instructions: expect array of strings, 1-15 items, each >=10 chars
+    let instructionsArr = [];
+    if (Array.isArray(instructions)) {
+        instructionsArr = instructions.map(i => i.trim()).filter(Boolean);
+    } else if (typeof instructions === 'string') {
+        // Fallback for string input (split by newlines)
+        instructionsArr = instructions.split('\n').map(i => i.trim()).filter(Boolean);
+    }
+
     if (instructionsArr.length < MIN_INSTRUCTION_COUNT) {
         errors.push("At least one instruction is required.");
     } else if (instructionsArr.length > MAX_INSTRUCTION_COUNT) {
@@ -115,7 +133,7 @@ function validateAndParseRecipeData(body) {
     } else if (prepTimeNum > PREP_TIME_MAX) {
         errors.push(`Preparation time cannot exceed ${PREP_TIME_MAX} minutes.`);
     }
-    
+
     const servingsNum = parseInt(servings, 10);
     if (isNaN(servingsNum) || servingsNum < SERVINGS_MIN) {
         errors.push(`Servings must be at least ${SERVINGS_MIN}.`);

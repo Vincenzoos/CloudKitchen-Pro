@@ -64,6 +64,7 @@ export class RecipeAdd implements OnInit {
         this.database.getRecipeFormOptions().subscribe({
             next: (response: FormOptionsResponse) => {
                 if (response.success && response.data) {
+                    console.log('Form options loaded:', response.data);
                     this.mealTypes = response.data.mealTypes;
                     this.cuisineTypes = response.data.cuisineTypes;
                     this.difficultyTypes = response.data.difficultyTypes;
@@ -83,6 +84,12 @@ export class RecipeAdd implements OnInit {
         this.errors = [];
         this.error = '';
 
+        // Check if form options are loaded
+        if (this.mealTypes.length === 0 || this.cuisineTypes.length === 0 || this.difficultyTypes.length === 0) {
+            this.error = 'Form options are still loading. Please wait a moment and try again.';
+            return;
+        }
+
         // Stop if form is invalid
         if (this.recipeForm.invalid) {
             return;
@@ -97,14 +104,14 @@ export class RecipeAdd implements OnInit {
             return;
         }
 
-        // Prepare recipe data
+        // Prepare recipe data with kebab-case keys for backend compatibility
         const formValue = this.recipeForm.value;
-        const recipe: Recipe = {
+        const recipe: any = {
             title: formValue.title,
             chef: this.currentUser?.fullname || formValue.chef,
-            prepTime: parseInt(formValue.prepTime),
-            mealType: formValue.mealType,
-            cuisineType: formValue.cuisineType,
+            'prep-time': parseInt(formValue.prepTime),
+            'meal-type': formValue.mealType,
+            'cuisine-type': formValue.cuisineType,
             difficulty: formValue.difficulty,
             servings: parseInt(formValue.servings),
             // Split ingredients and instructions by newline

@@ -7,14 +7,20 @@
                 </div>
                 <div class="card-body">
                     <!-- Display errors if any -->
-                    <div *ngIf="errors.length > 0" class="alert alert-danger">
+                    @if (errors.length > 0) {
+                    <div class="alert alert-danger">
                         <ul class="mb-0">
-                            <li *ngFor="let err of errors">{{ err }}</li>
+                            @for (err of errors; track err) {
+                            <li>{{ err }}</li>
+                            }
                         </ul>
                     </div>
-                    <div *ngIf="error" class="alert alert-danger">
+                    }
+                    @if (error) {
+                    <div class="alert alert-danger">
                         {{ error }}
                     </div>
+                    }
 
                     <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="row g-4">
                         <!-- Basic Information -->
@@ -53,9 +59,11 @@
                             <select class="form-select" id="mealType" formControlName="mealType"
                                 [class.is-invalid]="submitted && f['mealType'].errors">
                                 <option value="">Choose...</option>
-                                <option *ngFor="let type of mealTypes" [value]="type">
+                                @for (type of mealTypes; track type) {
+                                <option [value]="type">
                                     {{ type.charAt(0).toUpperCase() + type.slice(1) }}
                                 </option>
+                                }
                             </select>
                             <div *ngIf="submitted && f['mealType'].errors" class="invalid-feedback">
                                 <div *ngIf="f['mealType'].errors['required']">Meal type is required</div>
@@ -67,9 +75,11 @@
                             <select class="form-select" id="cuisineType" formControlName="cuisineType"
                                 [class.is-invalid]="submitted && f['cuisineType'].errors">
                                 <option value="">Choose...</option>
-                                <option *ngFor="let type of cuisineTypes" [value]="type">
+                                @for (type of cuisineTypes; track type) {
+                                <option [value]="type">
                                     {{ type.charAt(0).toUpperCase() + type.slice(1) }}
                                 </option>
+                                }
                             </select>
                             <div *ngIf="submitted && f['cuisineType'].errors" class="invalid-feedback">
                                 <div *ngIf="f['cuisineType'].errors['required']">Cuisine type is required</div>
@@ -81,9 +91,11 @@
                             <select class="form-select" id="difficulty" formControlName="difficulty"
                                 [class.is-invalid]="submitted && f['difficulty'].errors">
                                 <option value="">Choose...</option>
-                                <option *ngFor="let type of difficultyTypes" [value]="type">
+                                @for (type of difficultyTypes; track type) {
+                                <option [value]="type">
                                     {{ type.charAt(0).toUpperCase() + type.slice(1) }}
                                 </option>
+                                }
                             </select>
                             <div *ngIf="submitted && f['difficulty'].errors" class="invalid-feedback">
                                 <div *ngIf="f['difficulty'].errors['required']">Difficulty is required</div>
@@ -126,8 +138,10 @@
                         <!-- Buttons -->
                         <div class="col-12 d-flex justify-content-center mt-4 gap-2">
                             <button type="submit" class="btn btn-primary" [disabled]="loading">
-                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"
+                                @if (loading) {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"
                                     aria-hidden="true"></span>
+                                }
                                 {{ loading ? 'Creating...' : 'Add Recipe' }}
                             </button>
                             <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="loading">

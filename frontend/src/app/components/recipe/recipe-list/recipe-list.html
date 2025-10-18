@@ -49,7 +49,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let recipe of recipes">
+                    @for (recipe of recipes; track recipe._id) {
+                    <tr>
                         <td class="text-danger fw-semibold text-nowrap">{{ padRecipeId(recipe.recipeId) }}</td>
                         <td class="fw-bold text-nowrap">
                             <a [routerLink]="['/recipe/detail-' + STUDENT_ID, recipe._id]" class="text-decoration-none">
@@ -70,12 +71,16 @@
                         <td class="text-nowrap">{{ recipe.servings }}</td>
                         <td class="align-top" style="max-width: 180px;">
                             <ul class="small mb-0 ps-3 overflow-auto" style="max-height: 80px;">
-                                <li *ngFor="let ingredient of recipe.ingredients">{{ ingredient }}</li>
+                                @for (ingredient of recipe.ingredients; track ingredient) {
+                                <li>{{ ingredient }}</li>
+                                }
                             </ul>
                         </td>
                         <td class="align-top" style="max-width: 200px;">
                             <ol class="small mb-0 ps-3 overflow-auto" style="max-height: 80px;">
-                                <li *ngFor="let instruction of recipe.instructions">{{ instruction }}</li>
+                                @for (instruction of recipe.instructions; track instruction) {
+                                <li>{{ instruction }}</li>
+                                }
                             </ol>
                         </td>
                         <td class="text-nowrap">{{ formatDate(recipe.createdDate) }}</td>
@@ -94,9 +99,11 @@
                             </button>
                         </td>
                     </tr>
-                    <tr *ngIf="recipes.length === 0">
+                    } @empty {
+                    <tr>
                         <td colspan="12" class="text-center text-muted py-4">No recipes found.</td>
                     </tr>
+                    }
                 </tbody>
             </table>
         </div>

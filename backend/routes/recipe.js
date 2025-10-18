@@ -9,6 +9,22 @@ const STUDENT_NAME = 'Viet Tran';
 
 const router = express.Router();
 
+// ============================================
+// PUBLIC ROUTES (no authentication required)
+// ============================================
+
+// GET - Get recipe form options (JSON API) - Public endpoint
+router.get(`/form-options-${STUDENT_ID}`, (req, res) => {
+    return res.status(200).json({
+        success: true,
+        data: {
+            mealTypes: MEAL_TYPES,
+            cuisineTypes: CUISINE_TYPES,
+            difficultyTypes: DIFFICULTY_TYPES
+        }
+    });
+});
+
 // apply login + role-check to all recipe routes, make sure only user with the role of "chef" can access
 router.use(requireLogin, authorizeRoles(['chef']));
 // ============================================
@@ -38,18 +54,6 @@ router.get(`/recipes-${STUDENT_ID}`, async (req, res) => {
 // ============================================
 // CREATE RECIPE ROUTES
 // ============================================
-
-// GET - Get recipe form options (JSON API)
-router.get(`/form-options-${STUDENT_ID}`, (req, res) => {
-    return res.status(200).json({
-        success: true,
-        data: {
-            mealTypes: MEAL_TYPES,
-            cuisineTypes: CUISINE_TYPES,
-            difficultyTypes: DIFFICULTY_TYPES
-        }
-    });
-});
 
 // POST - Create new recipe (JSON API)
 router.post(`/add-${STUDENT_ID}`, recipeValidationMiddleware, async (req, res) => {
