@@ -80,7 +80,7 @@
                                 }
                             </ol>
                         </td>
-                        <td class="text-nowrap">{{ formatDate(recipe.createdDate) }}</td>
+                        <td class="text-nowrap">{{ recipe.createdDate | date:'shortDate' }}</td>
                         <td class="text-nowrap">
                             <button (click)="viewRecipe(recipe._id!)" class="btn btn-sm btn-outline-info me-1"
                                 title="View">

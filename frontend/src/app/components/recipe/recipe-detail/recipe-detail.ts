@@ -86,14 +86,4 @@ export class RecipeDetail implements OnInit {
                 return 'text-bg-secondary';
         }
     }
-
-    // Format date to readable string
-    formatDate(date: Date | undefined): string {
-        if (!date) return 'N/A';
-        return new Date(date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
 }

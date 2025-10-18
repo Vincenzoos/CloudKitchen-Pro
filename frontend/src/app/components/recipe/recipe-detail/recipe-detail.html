@@ -81,7 +81,7 @@
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">Created:</td>
-                                    <td>{{ formatDate(recipe.createdDate) }}</td>
+                                    <td>{{ recipe.createdDate | date:'shortDate' }}</td>
                                 </tr>
                             </table>
                         </div>

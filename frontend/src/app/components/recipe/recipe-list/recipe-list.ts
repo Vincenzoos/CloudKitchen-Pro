@@ -152,12 +152,6 @@ export class RecipeList implements OnInit {
         }
     }
 
-    // Format date to readable string
-    formatDate(date: Date | undefined): string {
-        if (!date) return 'N/A';
-        return new Date(date).toLocaleDateString();
-    }
-
     // Pad recipe ID with zeros
     padRecipeId(recipeId: string | undefined): string {
         if (!recipeId) return 'N/A';
