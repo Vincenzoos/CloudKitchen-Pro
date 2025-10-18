@@ -170,8 +170,11 @@ export class RecipeEdit implements OnInit {
         this.database.updateRecipe(this.recipeId, recipe, userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success) {
-                    // Navigate back to recipes list
-                    this.router.navigate([`/recipe/recipes-${STUDENT_ID}`]);
+                    // Navigate back to recipes list with success message
+                    const title = recipe.title || 'Recipe';
+                    this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
+                        queryParams: { message: `Recipe "${title}" updated successfully` }
+                    });
                 } else {
                     this.errors = response.errors || [response.error || 'Failed to update recipe'];
                     this.loading = false;

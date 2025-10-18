@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Database, Recipe, RecipesListResponse, RecipeResponse } from '../../../services/database';
 
 const STUDENT_ID = "33810672";
@@ -16,7 +16,7 @@ export class RecipeList implements OnInit {
     recipes: Recipe[] = [];
     loading: boolean = true;
     error: string = '';
-    successMessage: string = '';
+    toastMessage: string = '';
     STUDENT_ID = STUDENT_ID;
 
     // Recipe to be deleted - for confirmation modal
@@ -24,10 +24,18 @@ export class RecipeList implements OnInit {
 
     constructor(
         private database: Database,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute
     ) { }
 
     ngOnInit(): void {
+        // Check for success message from navigation
+        this.route.queryParams.subscribe(params => {
+            if (params['message']) {
+                this.showToast(params['message']);
+            }
+        });
+
         this.loadRecipes();
     }
 
@@ -111,14 +119,9 @@ export class RecipeList implements OnInit {
         this.database.deleteRecipe(id, userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success) {
-                    this.successMessage = `Recipe "${title}" deleted successfully`;
+                    this.showToast(`Recipe "${title}" deleted successfully`);
                     this.loadRecipes(); // Reload the list
                     this.cancelDelete(); // Close modal
-
-                    // Auto-dismiss success message after 3 seconds
-                    setTimeout(() => {
-                        this.successMessage = '';
-                    }, 3000);
                 } else {
                     this.error = response.error || 'Failed to delete recipe';
                     this.cancelDelete();
@@ -157,5 +160,18 @@ export class RecipeList implements OnInit {
         if (!recipeId) return 'N/A';
         const numericPart = recipeId.replace('R-', '');
         return numericPart.padStart(5, '0');
+    }
+
+    // Show toast notification
+    private showToast(message: string): void {
+        this.toastMessage = message;
+        const toastEl = document.getElementById('recipeToast');
+        if (toastEl && this.toastMessage.trim() !== '') {
+            const bootstrap = (window as any).bootstrap;
+            if (bootstrap && bootstrap.Toast) {
+                const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+                toast.show();
+            }
+        }
     }
 }

@@ -123,8 +123,11 @@ export class RecipeAdd implements OnInit {
         this.database.createRecipe(recipe, userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success) {
-                    // Navigate back to recipes list
-                    this.router.navigate([`/recipe/recipes-${STUDENT_ID}`]);
+                    // Navigate back to recipes list with success message
+                    const title = recipe.title || 'Recipe';
+                    this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
+                        queryParams: { message: `Recipe "${title}" created successfully` }
+                    });
                 } else {
                     this.errors = response.errors || [response.error || 'Failed to create recipe'];
                     this.loading = false;

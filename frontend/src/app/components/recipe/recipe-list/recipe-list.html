@@ -1,4 +1,21 @@
 <div class="container my-5">
+    <!-- Toast Notification -->
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 start-50 translate-middle-x p-3"
+        style="z-index: 1080;">
+        <div id="recipeToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="https://img.icons8.com/ios-filled/40/000000/sushi.png" class="rounded me-2"
+                    alt="CloudKitchen Pro Logo" style="width: 1.5rem; height: 1.5rem;">
+                <strong class="me-auto">CloudKitchen Pro</strong>
+                <small class="text-body-secondary">Now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ toastMessage }}
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <div class="text-center mb-4">
         <span style="font-size:2.5rem;">👨‍🍳</span>
@@ -7,12 +24,6 @@
         <span class="badge rounded-pill bg-secondary fs-6 mb-2">
             {{ recipes.length }} recipe{{ recipes.length === 1 ? '' : 's' }}
         </span>
-    </div>
-
-    <!-- Success Message -->
-    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ successMessage }}
-        <button type="button" class="btn-close" (click)="successMessage = ''" aria-label="Close"></button>
     </div>
 
     <!-- Error Message -->
