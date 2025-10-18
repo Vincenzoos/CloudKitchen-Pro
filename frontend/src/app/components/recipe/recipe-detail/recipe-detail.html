@@ -26,7 +26,7 @@
             <div class="card shadow mb-4" style="border-radius:1.5rem;">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
                     style="border-radius: 1.5rem 1.5rem 0 0;">
-                    <h2 class="mt-2 mb-2">{{ recipe.title }}</h2>
+                    <h2 class="mt-2 mb-2">👁️ {{ recipe.title }}</h2>
                     <div>
                         <button class="btn btn-light btn-sm me-2" (click)="editRecipe()">
                             Edit
@@ -52,7 +52,7 @@
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">Meal Type:</td>
-                                    <td><span class="badge bg-primary">{{ recipe.mealType }}</span></td>
+                                    <td><span class="badge text-bg-primary">{{ recipe.mealType }}</span></td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">Cuisine:</td>
@@ -95,9 +95,9 @@
                             <h4 class="mb-3">Ingredients</h4>
                             <ul class="list-group list-group-flush">
                                 @for (ingredient of recipe.ingredients; track ingredient; let i = $index) {
-                                <li class="list-group-item ps-4">
-                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                    {{ ingredient }}
+                                <li class="list-group-item ps-4 d-flex gap-3">
+                                    <span class="fw-bold flex-shrink-0">●</span>
+                                    <span>{{ ingredient }}</span>
                                 </li>
                                 }
                             </ul>
@@ -110,10 +110,11 @@
                     <div class="row">
                         <div class="col-12">
                             <h4 class="mb-3">Instructions</h4>
-                            <ol class="list-group list-group-numbered">
+                            <ol class="list-group list-group-flush">
                                 @for (instruction of recipe.instructions; track instruction; let i = $index) {
-                                <li class="list-group-item ps-4 mb-2">
-                                    {{ instruction }}
+                                <li class="list-group-item ps-4 mb-2 d-flex gap-3">
+                                    <span class="fw-bold fs-6 flex-shrink-0">{{ i + 1 }}</span>
+                                    <span>{{ instruction }}</span>
                                 </li>
                                 }
                             </ol>

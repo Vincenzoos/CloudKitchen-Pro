@@ -77,13 +77,13 @@ export class RecipeDetail implements OnInit {
     getDifficultyClass(difficulty: string): string {
         switch (difficulty.toLowerCase()) {
             case 'easy':
-                return 'bg-success';
+                return 'text-bg-success';
             case 'medium':
-                return 'bg-warning text-dark';
+                return 'text-bg-warning';
             case 'hard':
-                return 'bg-danger';
+                return 'text-bg-danger';
             default:
-                return 'bg-secondary';
+                return 'text-bg-secondary';
         }
     }
 
