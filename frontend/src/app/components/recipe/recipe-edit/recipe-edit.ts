@@ -6,6 +6,10 @@ import { Database, RecipeResponse, FormOptionsResponse } from '../../../services
 
 const STUDENT_ID = "33810672";
 
+// TODO: Cannot use ReactiveFormsModule, FormGroup, Validators, use template drive form module for all forms
+// TODO: Reconsider the use of localStorage to save user data, might need to switch back to storing/passing it in query params
+// TODO: Might need to remove ActivatedRoute if not using route params as not included in Angular built-in modules (FormsModule, HttpClientModule, RouterModule, etc.).
+// TODO: Look at w10 on how to use  Confirmation Dialogs with ng-bootstrap, might need to replace toast with that
 @Component({
     selector: 'app-recipe-edit',
     standalone: true,
