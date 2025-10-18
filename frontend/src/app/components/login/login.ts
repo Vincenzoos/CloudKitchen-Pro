@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Database } from '../../services/database';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ToastNotificationComponent } from '../shared/toast-notification/toast-notification';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule, RouterLink, ToastNotificationComponent],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
 export class Login implements OnInit {
+  @ViewChild(ToastNotificationComponent) toastComponent!: ToastNotificationComponent;
+
   formData = {
     email: '',
     password: '',
@@ -79,23 +82,12 @@ export class Login implements OnInit {
 
   private showToast() {
     console.log('Login showToast called with message:', this.msg);
-    const toastEl = document.getElementById('msgToast');
-    console.log('Login toast element found:', !!toastEl);
-
-    if (toastEl && this.msg.trim() !== '') {
-      // Using Bootstrap's Toast API
-      const bootstrap = (window as any).bootstrap;
-      console.log('Login Bootstrap available:', !!bootstrap);
-
-      if (bootstrap && bootstrap.Toast) {
-        const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
-        toast.show();
-        console.log('Login toast shown');
-      } else {
-        console.warn('Bootstrap Toast not available');
-      }
+    if (this.toastComponent) {
+      this.toastComponent.message = this.msg;
+      this.toastComponent.show();
+      console.log('Login toast shown');
     } else {
-      console.warn('Toast element not found');
+      console.warn('Toast component not found');
     }
   }
 }

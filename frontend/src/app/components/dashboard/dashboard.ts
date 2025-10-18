@@ -1,15 +1,18 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Database } from '../../services/database';
 import { interval, Subscription } from 'rxjs';
+import { ToastNotificationComponent } from '../shared/toast-notification/toast-notification';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, ToastNotificationComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(ToastNotificationComponent) toastComponent!: ToastNotificationComponent;
+
   msg: string = '';
   user: any = {};
   stats: any = {};
@@ -63,23 +66,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
   private showToast() {
     console.log('Dashboard showToast called with message:', this.msg);
-    const toastEl = document.getElementById('msgToast');
-    console.log('Dashboard toast element found:', !!toastEl);
-
-    if (toastEl && this.msg.trim() !== '') {
-      // Using Bootstrap's Toast API
-      const bootstrap = (window as any).bootstrap;
-      console.log('Dashboard Bootstrap available:', !!bootstrap);
-
-      if (bootstrap && bootstrap.Toast) {
-        const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
-        toast.show();
-        console.log('Dashboard toast shown');
-      } else {
-        console.warn('Bootstrap Toast not available');
-      }
+    if (this.toastComponent) {
+      this.toastComponent.message = this.msg;
+      this.toastComponent.show();
+      console.log('Dashboard toast shown');
     } else {
-      console.warn('Toast element not found');
+      console.warn('Toast component not found');
     }
   }
 }

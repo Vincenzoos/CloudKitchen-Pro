@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Database, Recipe, RecipesListResponse, RecipeResponse } from '../../../services/database';
+import { ToastNotificationComponent } from '../../shared/toast-notification/toast-notification';
 
 const STUDENT_ID = "33810672";
 
 @Component({
     selector: 'app-recipe-list',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, ToastNotificationComponent],
     templateUrl: './recipe-list.html',
     styleUrls: ['./recipe-list.css']
 })
 export class RecipeList implements OnInit {
+    @ViewChild(ToastNotificationComponent) toastComponent!: ToastNotificationComponent;
+
     recipes: Recipe[] = [];
     loading: boolean = true;
     error: string = '';
@@ -165,13 +168,9 @@ export class RecipeList implements OnInit {
     // Show toast notification
     private showToast(message: string): void {
         this.toastMessage = message;
-        const toastEl = document.getElementById('recipeToast');
-        if (toastEl && this.toastMessage.trim() !== '') {
-            const bootstrap = (window as any).bootstrap;
-            if (bootstrap && bootstrap.Toast) {
-                const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
-                toast.show();
-            }
+        if (this.toastComponent) {
+            this.toastComponent.message = message;
+            this.toastComponent.show();
         }
     }
 }
