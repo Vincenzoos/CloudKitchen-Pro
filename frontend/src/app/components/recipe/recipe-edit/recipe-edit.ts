@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Database, Recipe, RecipeResponse, FormOptionsResponse } from '../../../services/database';
+import { Database, RecipeResponse, FormOptionsResponse } from '../../../services/database';
 
 const STUDENT_ID = "33810672";
 

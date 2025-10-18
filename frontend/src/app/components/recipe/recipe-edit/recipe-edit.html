@@ -41,11 +41,19 @@
                             <input type="text" class="form-control" id="title" formControlName="title"
                                 placeholder="e.g., Chocolate Chip Cookies"
                                 [class.is-invalid]="submitted && f['title'].errors">
-                            <div *ngIf="submitted && f['title'].errors" class="invalid-feedback">
-                                <div *ngIf="f['title'].errors['required']">Title is required</div>
-                                <div *ngIf="f['title'].errors['minlength']">Title must be at least 3 characters</div>
-                                <div *ngIf="f['title'].errors['maxlength']">Title cannot exceed 100 characters</div>
+                            @if (submitted && f['title'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['title'].errors['required']) {
+                                <div>Title is required</div>
+                                }
+                                @if (f['title'].errors['minlength']) {
+                                <div>Title must be at least 3 characters</div>
+                                }
+                                @if (f['title'].errors['maxlength']) {
+                                <div>Title cannot exceed 100 characters</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <div class="col-md-6">
@@ -58,11 +66,19 @@
                             <label for="prepTime" class="form-label">Preparation Time (minutes)</label>
                             <input type="number" class="form-control" id="prepTime" formControlName="prepTime"
                                 placeholder="e.g., 30" [class.is-invalid]="submitted && f['prepTime'].errors">
-                            <div *ngIf="submitted && f['prepTime'].errors" class="invalid-feedback">
-                                <div *ngIf="f['prepTime'].errors['required']">Prep time is required</div>
-                                <div *ngIf="f['prepTime'].errors['min']">Prep time must be at least 1 minute</div>
-                                <div *ngIf="f['prepTime'].errors['max']">Prep time cannot exceed 480 minutes</div>
+                            @if (submitted && f['prepTime'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['prepTime'].errors['required']) {
+                                <div>Prep time is required</div>
+                                }
+                                @if (f['prepTime'].errors['min']) {
+                                <div>Prep time must be at least 1 minute</div>
+                                }
+                                @if (f['prepTime'].errors['max']) {
+                                <div>Prep time cannot exceed 480 minutes</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <!-- Recipe Details -->
@@ -77,9 +93,13 @@
                                 </option>
                                 }
                             </select>
-                            <div *ngIf="submitted && f['mealType'].errors" class="invalid-feedback">
-                                <div *ngIf="f['mealType'].errors['required']">Meal type is required</div>
+                            @if (submitted && f['mealType'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['mealType'].errors['required']) {
+                                <div>Meal type is required</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <div class="col-md-6">
@@ -93,9 +113,13 @@
                                 </option>
                                 }
                             </select>
-                            <div *ngIf="submitted && f['cuisineType'].errors" class="invalid-feedback">
-                                <div *ngIf="f['cuisineType'].errors['required']">Cuisine type is required</div>
+                            @if (submitted && f['cuisineType'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['cuisineType'].errors['required']) {
+                                <div>Cuisine type is required</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <div class="col-md-6">
@@ -109,20 +133,32 @@
                                 </option>
                                 }
                             </select>
-                            <div *ngIf="submitted && f['difficulty'].errors" class="invalid-feedback">
-                                <div *ngIf="f['difficulty'].errors['required']">Difficulty is required</div>
+                            @if (submitted && f['difficulty'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['difficulty'].errors['required']) {
+                                <div>Difficulty is required</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <div class="col-md-6">
                             <label for="servings" class="form-label">Servings</label>
                             <input type="number" class="form-control" id="servings" formControlName="servings"
                                 placeholder="e.g., 4" [class.is-invalid]="submitted && f['servings'].errors">
-                            <div *ngIf="submitted && f['servings'].errors" class="invalid-feedback">
-                                <div *ngIf="f['servings'].errors['required']">Servings is required</div>
-                                <div *ngIf="f['servings'].errors['min']">Servings must be at least 1</div>
-                                <div *ngIf="f['servings'].errors['max']">Servings cannot exceed 20</div>
+                            @if (submitted && f['servings'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['servings'].errors['required']) {
+                                <div>Servings is required</div>
+                                }
+                                @if (f['servings'].errors['min']) {
+                                <div>Servings must be at least 1</div>
+                                }
+                                @if (f['servings'].errors['max']) {
+                                <div>Servings cannot exceed 20</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <!-- Ingredients -->
@@ -131,9 +167,13 @@
                             <textarea class="form-control" id="ingredients" formControlName="ingredients" rows="5"
                                 placeholder="Enter each ingredient on a separate line"
                                 [class.is-invalid]="submitted && f['ingredients'].errors"></textarea>
-                            <div *ngIf="submitted && f['ingredients'].errors" class="invalid-feedback">
-                                <div *ngIf="f['ingredients'].errors['required']">Ingredients are required</div>
+                            @if (submitted && f['ingredients'].errors) {
+                            <div class="invalid-feedback">
+                                @if (f['ingredients'].errors['required']) {
+                                <div>Ingredients are required</div>
+                                }
                             </div>
+                            }
                         </div>
 
                         <!-- Instructions -->
@@ -142,11 +182,13 @@
                             <textarea class="form-control" id="instructions" formControlName="instructions" rows="5"
                                 placeholder="Enter step-by-step instructions separated by new lines"
                                 [class.is-invalid]="submitted && f['instructions'].errors"></textarea>
-                            <div *ngIf="submitted && f['instructions'].errors" class="invalid-feedback">
+                            @if (submitted && f['instructions'].errors) {
+                            <div class="invalid-feedback">
                                 @if (f['instructions'].errors['required']) {
                                 <div>Instructions are required</div>
                                 }
                             </div>
+                            }
                         </div>
 
                         <!-- Buttons -->
