@@ -1,0 +1,142 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow" style="border-radius:1.5rem;">
+                <div class="card-header bg-primary text-white" style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h2 class="mt-2">Add New Recipe</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Display errors if any -->
+                    <div *ngIf="errors.length > 0" class="alert alert-danger">
+                        <ul class="mb-0">
+                            <li *ngFor="let err of errors">{{ err }}</li>
+                        </ul>
+                    </div>
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="row g-4">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <label for="title" class="form-label">Recipe Title</label>
+                            <input type="text" class="form-control" id="title" formControlName="title"
+                                placeholder="e.g., Chocolate Chip Cookies"
+                                [class.is-invalid]="submitted && f['title'].errors">
+                            <div *ngIf="submitted && f['title'].errors" class="invalid-feedback">
+                                <div *ngIf="f['title'].errors['required']">Title is required</div>
+                                <div *ngIf="f['title'].errors['minlength']">Title must be at least 3 characters</div>
+                                <div *ngIf="f['title'].errors['maxlength']">Title cannot exceed 100 characters</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="chef" class="form-label">Chef Name</label>
+                            <input type="text" class="form-control" id="chef" formControlName="chef"
+                                placeholder="e.g., John Smith">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="prepTime" class="form-label">Preparation Time (minutes)</label>
+                            <input type="number" class="form-control" id="prepTime" formControlName="prepTime"
+                                placeholder="e.g., 30" [class.is-invalid]="submitted && f['prepTime'].errors">
+                            <div *ngIf="submitted && f['prepTime'].errors" class="invalid-feedback">
+                                <div *ngIf="f['prepTime'].errors['required']">Prep time is required</div>
+                                <div *ngIf="f['prepTime'].errors['min']">Prep time must be at least 1 minute</div>
+                                <div *ngIf="f['prepTime'].errors['max']">Prep time cannot exceed 480 minutes</div>
+                            </div>
+                        </div>
+
+                        <!-- Recipe Details -->
+                        <div class="col-md-6">
+                            <label for="mealType" class="form-label">Meal Type</label>
+                            <select class="form-select" id="mealType" formControlName="mealType"
+                                [class.is-invalid]="submitted && f['mealType'].errors">
+                                <option value="">Choose...</option>
+                                <option *ngFor="let type of mealTypes" [value]="type">
+                                    {{ type.charAt(0).toUpperCase() + type.slice(1) }}
+                                </option>
+                            </select>
+                            <div *ngIf="submitted && f['mealType'].errors" class="invalid-feedback">
+                                <div *ngIf="f['mealType'].errors['required']">Meal type is required</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="cuisineType" class="form-label">Cuisine Type</label>
+                            <select class="form-select" id="cuisineType" formControlName="cuisineType"
+                                [class.is-invalid]="submitted && f['cuisineType'].errors">
+                                <option value="">Choose...</option>
+                                <option *ngFor="let type of cuisineTypes" [value]="type">
+                                    {{ type.charAt(0).toUpperCase() + type.slice(1) }}
+                                </option>
+                            </select>
+                            <div *ngIf="submitted && f['cuisineType'].errors" class="invalid-feedback">
+                                <div *ngIf="f['cuisineType'].errors['required']">Cuisine type is required</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="difficulty" class="form-label">Difficulty</label>
+                            <select class="form-select" id="difficulty" formControlName="difficulty"
+                                [class.is-invalid]="submitted && f['difficulty'].errors">
+                                <option value="">Choose...</option>
+                                <option *ngFor="let type of difficultyTypes" [value]="type">
+                                    {{ type.charAt(0).toUpperCase() + type.slice(1) }}
+                                </option>
+                            </select>
+                            <div *ngIf="submitted && f['difficulty'].errors" class="invalid-feedback">
+                                <div *ngIf="f['difficulty'].errors['required']">Difficulty is required</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="servings" class="form-label">Servings</label>
+                            <input type="number" class="form-control" id="servings" formControlName="servings"
+                                placeholder="e.g., 4" [class.is-invalid]="submitted && f['servings'].errors">
+                            <div *ngIf="submitted && f['servings'].errors" class="invalid-feedback">
+                                <div *ngIf="f['servings'].errors['required']">Servings is required</div>
+                                <div *ngIf="f['servings'].errors['min']">Servings must be at least 1</div>
+                                <div *ngIf="f['servings'].errors['max']">Servings cannot exceed 20</div>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="col-12">
+                            <label for="ingredients" class="form-label">Ingredients (one per line)</label>
+                            <textarea class="form-control" id="ingredients" formControlName="ingredients" rows="5"
+                                placeholder="Enter each ingredient on a separate line"
+                                [class.is-invalid]="submitted && f['ingredients'].errors"></textarea>
+                            <div *ngIf="submitted && f['ingredients'].errors" class="invalid-feedback">
+                                <div *ngIf="f['ingredients'].errors['required']">Ingredients are required</div>
+                            </div>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="col-12">
+                            <label for="instructions" class="form-label">Instructions (one per line)</label>
+                            <textarea class="form-control" id="instructions" formControlName="instructions" rows="5"
+                                placeholder="Enter step-by-step instructions separated by new lines"
+                                [class.is-invalid]="submitted && f['instructions'].errors"></textarea>
+                            <div *ngIf="submitted && f['instructions'].errors" class="invalid-feedback">
+                                <div *ngIf="f['instructions'].errors['required']">Instructions are required</div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 d-flex justify-content-center mt-4 gap-2">
+                            <button type="submit" class="btn btn-primary" [disabled]="loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"
+                                    aria-hidden="true"></span>
+                                {{ loading ? 'Creating...' : 'Add Recipe' }}
+                            </button>
+                            <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="loading">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

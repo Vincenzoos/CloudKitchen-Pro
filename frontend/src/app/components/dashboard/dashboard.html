@@ -92,15 +92,13 @@
                     Recipe Actions
                 </div>
                 <div class="card-body text-center">
-                    <a href="/recipe/add-33810672?userId={{ user.userId }}" class="btn btn-outline-primary w-100 mb-2">
+                    <a [routerLink]="['/recipe/add-33810672']" class="btn btn-outline-primary w-100 mb-2">
                         Add New Recipe
                     </a>
-                    <a href="/recipe/recipes-33810672?userId={{ user.userId }}"
-                        class="btn btn-outline-primary w-100 mb-2">
+                    <a [routerLink]="['/recipe/recipes-33810672']" class="btn btn-outline-primary w-100 mb-2">
                         My Recipes
                     </a>
-                    <a href="/recipe/availability-33810672?userId={{ user.userId }}"
-                        class="btn btn-outline-primary w-100 mb-2">
+                    <a [routerLink]="['/recipe/availability-33810672']" class="btn btn-outline-primary w-100 mb-2">
                         Recipe Availability
                     </a>
                 </div>

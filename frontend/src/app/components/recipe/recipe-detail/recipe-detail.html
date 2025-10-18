@@ -1,0 +1,129 @@
+<div class="container my-5">
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+        {{ error }}
+        <button type="button" class="btn btn-sm btn-outline-danger ms-3" (click)="backToList()">
+            Back to List
+        </button>
+    </div>
+
+    <!-- Recipe Detail -->
+    <div *ngIf="recipe && !loading" class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Recipe Header Card -->
+            <div class="card shadow mb-4" style="border-radius:1.5rem;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                    style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h2 class="mt-2 mb-2">{{ recipe.title }}</h2>
+                    <div>
+                        <button class="btn btn-light btn-sm me-2" (click)="editRecipe()">
+                            Edit
+                        </button>
+                        <button class="btn btn-outline-light btn-sm" (click)="backToList()">
+                            Back
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Recipe Metadata -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">Recipe Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-bold">Recipe ID:</td>
+                                    <td class="text-danger">{{ recipe.recipeId }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Chef:</td>
+                                    <td>{{ recipe.chef }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Meal Type:</td>
+                                    <td><span class="badge bg-primary">{{ recipe.mealType }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Cuisine:</td>
+                                    <td>{{ recipe.cuisineType }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">Cooking Details</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-bold">Difficulty:</td>
+                                    <td>
+                                        <span [class]="'badge ' + getDifficultyClass(recipe.difficulty)">
+                                            {{ recipe.difficulty }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Prep Time:</td>
+                                    <td>{{ recipe.prepTime }} minutes</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Servings:</td>
+                                    <td>{{ recipe.servings }} people</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Created:</td>
+                                    <td>{{ formatDate(recipe.createdDate) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Ingredients Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="mb-3">Ingredients</h4>
+                            <ul class="list-group list-group-flush">
+                                <li *ngFor="let ingredient of recipe.ingredients; let i = index"
+                                    class="list-group-item ps-4">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    {{ ingredient }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Instructions Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h4 class="mb-3">Instructions</h4>
+                            <ol class="list-group list-group-numbered">
+                                <li *ngFor="let instruction of recipe.instructions; let i = index"
+                                    class="list-group-item ps-4 mb-2">
+                                    {{ instruction }}
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-center gap-2 mb-4">
+                <button class="btn btn-primary" (click)="editRecipe()">
+                    Edit Recipe
+                </button>
+                <button class="btn btn-secondary" (click)="backToList()">
+                    Back to List
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

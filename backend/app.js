@@ -65,20 +65,6 @@ app.use(dbCheck);
 // HOME ROUTE
 // ============================================
 
-// app.get('/', requireLogin, async (req, res) => {
-//     // Fetch counts for dashboard display
-//     const userCount = await User.find().countDocuments();
-//     let recipeCount = await Recipe.find().countDocuments();
-//     const inventoryCount = await Inventory.find().countDocuments();
-//     const userRole = req.user.role;
-
-//     if (userRole === 'chef') {
-//         // If logged in user is a chef, dashboard total recipes is only their own
-//         recipeCount = await Recipe.find({ userId: req.user.userId }).countDocuments();
-//     }
-//     res.render('index', { title: 'Home - CloudKitchen Pro', isLoggedIn: true, user: req.user, userCount, recipeCount, inventoryCount, msg: req.query.msg || '' });
-// });
-
 app.get(`/api`, requireLogin, async (req, res) => {
     const { userId } = req.query;
     if (!userId) {
@@ -124,8 +110,6 @@ app.get(`/api`, requireLogin, async (req, res) => {
 // ============================================
 // USER ROUTE
 // ============================================
-// const userRoute = require('./routes/user');
-// app.use('/user', userRoute);
 
 // Route now turn into API calls
 const apiUserRoute = require('./routes/user');
@@ -143,8 +127,10 @@ app.use('/report', reportRoute);
 // ============================================
 // RECIPE ROUTE
 // ============================================
-const recipeRoute = require('./routes/recipe');
-app.use('/recipe', recipeRoute);
+// const recipeRoute = require('./routes/recipe');
+// app.use('/recipe', recipeRoute);
+const apiRecipeRoute = require('./routes/recipe');
+app.use('/api/recipe', apiRecipeRoute);
 
 // ============================================
 // INVENTORY ROUTE

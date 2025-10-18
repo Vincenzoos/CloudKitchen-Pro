@@ -4,7 +4,7 @@ const Inventory = require('../models/UserInventory');
 const { recipeValidationMiddleware } = require('../middleware/validation');
 const { requireLogin, authorizeRoles } = require('../middleware/auth');
 const STUDENT_ID = '33810672';
-const {MEAL_TYPES, CUISINE_TYPES, DIFFICULTY_TYPES} = require('../utils/recipe/constants');
+const { MEAL_TYPES, CUISINE_TYPES, DIFFICULTY_TYPES } = require('../utils/recipe/constants');
 const STUDENT_NAME = 'Viet Tran';
 
 const router = express.Router();
@@ -15,28 +15,22 @@ router.use(requireLogin, authorizeRoles(['chef']));
 // RECIPE LISTING ROUTES (chef only)
 // ============================================
 
-// GET / - Display all recipes for the current user
+// GET / - Get all recipes for the current user (JSON API)
 router.get(`/recipes-${STUDENT_ID}`, async (req, res) => {
     try {
         const userId = req.user.userId;
         const recipes = await Recipe.find({ userId: userId }).sort({ createdDate: -1 });
 
-        res.render('recipe/recipes', {
-            title: 'My Recipes - CloudKitchen Pro',
-            isLoggedIn: true,
-            user: req.user,
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-            recipes: recipes,
-            msg: req.query.msg || ''
+        return res.status(200).json({
+            success: true,
+            data: recipes,
+            count: recipes.length
         });
     } catch (error) {
         console.error('Error fetching recipes:', error);
-        res.status(500).render('errors/500', {
-            title: 'Error - CloudKitchen Pro',
-            userId: req.user && req.user.userId ? req.user.userId : '',
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+        return res.status(500).json({
+            success: false,
+            error: 'Failed to fetch recipes'
         });
     }
 });
@@ -45,37 +39,25 @@ router.get(`/recipes-${STUDENT_ID}`, async (req, res) => {
 // CREATE RECIPE ROUTES
 // ============================================
 
-// GET - Display add recipe form
-router.get(`/add-${STUDENT_ID}`, (req, res) => {
-    res.render('recipe/add-recipe', {
-        title: 'Add Recipe - CloudKitchen Pro',
-        isLoggedIn: true,
-        user: req.user,
-        STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-        STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-        errors: [],
-        formData: {},
-        MEAL_TYPES: MEAL_TYPES,
-        CUISINE_TYPES: CUISINE_TYPES,
-        DIFFICULTY_TYPES: DIFFICULTY_TYPES
+// GET - Get recipe form options (JSON API)
+router.get(`/form-options-${STUDENT_ID}`, (req, res) => {
+    return res.status(200).json({
+        success: true,
+        data: {
+            mealTypes: MEAL_TYPES,
+            cuisineTypes: CUISINE_TYPES,
+            difficultyTypes: DIFFICULTY_TYPES
+        }
     });
 });
 
-// POST - Create new recipe
+// POST - Create new recipe (JSON API)
 router.post(`/add-${STUDENT_ID}`, recipeValidationMiddleware, async (req, res) => {
-    // If middleware found validation errors, render add page with errors
+    // If middleware found validation errors, return JSON error response
     if (req.validationErrors && req.validationErrors.length > 0) {
-        return res.status(400).render('recipe/add-recipe', {
-            title: 'Add Recipe - CloudKitchen Pro',
-            isLoggedIn: true,
-            user: req.user,
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-            errors: req.validationErrors,
-            formData: req.body,
-            MEAL_TYPES: MEAL_TYPES,
-            CUISINE_TYPES: CUISINE_TYPES,
-            DIFFICULTY_TYPES: DIFFICULTY_TYPES
+        return res.status(400).json({
+            success: false,
+            errors: req.validationErrors
         });
     }
 
@@ -113,14 +95,17 @@ router.post(`/add-${STUDENT_ID}`, recipeValidationMiddleware, async (req, res) =
         // Save to database
         await newRecipe.save();
 
-        // Redirect to recipes listing page
-        res.redirect(`/recipe/recipes-${STUDENT_ID}?userId=${req.user.userId}`);
+        // Return success response with created recipe
+        return res.status(201).json({
+            success: true,
+            message: 'Recipe created successfully',
+            data: newRecipe
+        });
 
     } catch (error) {
         console.error('Error creating recipe:', error);
 
         let errors = [];
-        let formData = req.body;
 
         // Handle Mongoose validation errors
         if (error.name === 'ValidationError') {
@@ -141,18 +126,10 @@ router.post(`/add-${STUDENT_ID}`, recipeValidationMiddleware, async (req, res) =
             errors.push('An error occurred while saving the recipe. Please try again.');
         }
 
-        // Render form with errors
-        res.status(400).render('recipe/add-recipe', {
-            title: 'Add Recipe - CloudKitchen Pro',
-            isLoggedIn: true,
-            user: req.user,
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-            errors: errors,
-            formData: formData,
-            MEAL_TYPES: MEAL_TYPES,
-            CUISINE_TYPES: CUISINE_TYPES,
-            DIFFICULTY_TYPES: DIFFICULTY_TYPES
+        // Return JSON error response
+        return res.status(400).json({
+            success: false,
+            errors: errors
         });
     }
 });
@@ -161,79 +138,54 @@ router.post(`/add-${STUDENT_ID}`, recipeValidationMiddleware, async (req, res) =
 // RECIPE UPDATE ROUTES
 // ============================================
 
-// GET - Display edit recipe form
-
+// GET - Get a single recipe by ID (JSON API)
 router.get(`/edit-${STUDENT_ID}/:id`, async (req, res) => {
     const id = req.params.id;
     const userId = req.user.userId;
 
     try {
         // Ensure the recipe exists
-        const recipeToEdit = await Recipe.findOne({ _id: id, userId: userId });
-        if (!recipeToEdit) {
-            return res.status(404).render('errors/404', {
-                title: 'Recipe Not Found - CloudKitchen Pro',
-                userId: req.user && req.user.userId ? req.user.userId : '',
-                STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-                STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+        const recipe = await Recipe.findOne({ _id: id, userId: userId });
+        if (!recipe) {
+            return res.status(404).json({
+                success: false,
+                error: 'Recipe not found'
             });
         }
 
-        // Render edit form with the selected recipe if found
-        res.render('recipe/edit-recipe', {
-            title: 'Edit Recipe - CloudKitchen Pro',
-            isLoggedIn: true,
-            user: req.user,
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-            errors: [],
-            recipe: recipeToEdit,
-            formData: {},
-            MEAL_TYPES: MEAL_TYPES,
-            CUISINE_TYPES: CUISINE_TYPES,
-            DIFFICULTY_TYPES: DIFFICULTY_TYPES
+        // Return recipe data
+        return res.status(200).json({
+            success: true,
+            data: recipe
         });
     } catch (error) {
-        console.error('Error preparing edit form:', error);
-        res.status(500).render('errors/500', {
-            title: 'Error - CloudKitchen Pro',
-            userId: req.user && req.user.userId ? req.user.userId : '',
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+        console.error('Error fetching recipe:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Failed to fetch recipe'
         });
     }
 });
 
 
-// POST - Update existing recipe
-router.post(`/edit-${STUDENT_ID}/:id`, recipeValidationMiddleware, async (req, res) => {
+// PUT - Update existing recipe (JSON API)
+router.put(`/edit-${STUDENT_ID}/:id`, recipeValidationMiddleware, async (req, res) => {
     const id = req.params.id;
 
     // Fetch existing recipe once and return 404 if not found
     const recipeToEdit = await Recipe.findOne({ _id: id });
     if (!recipeToEdit) {
-        return res.status(404).render('errors/404', {
-            title: 'Recipe Not Found - CloudKitchen Pro',
-            userId: req.user && req.user.userId ? req.user.userId : '',
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+        return res.status(404).json({
+            success: false,
+            error: 'Recipe not found'
         });
     }
 
-    // If middleware found validation errors, render edit page with errors
+    // If middleware found validation errors, return JSON error response
     if (req.validationErrors && req.validationErrors.length > 0) {
-        return res.status(400).render('recipe/edit-recipe', {
-            title: 'Edit Recipe - CloudKitchen Pro',
-            isLoggedIn: true,
-            user: req.user,
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-            errors: req.validationErrors,
-            recipe: recipeToEdit,
-            formData: req.body,
-            MEAL_TYPES: MEAL_TYPES,
-            CUISINE_TYPES: CUISINE_TYPES,
-            DIFFICULTY_TYPES: DIFFICULTY_TYPES
+        return res.status(400).json({
+            success: false,
+            errors: req.validationErrors
         });
     }
 
@@ -249,7 +201,7 @@ router.post(`/edit-${STUDENT_ID}/:id`, recipeValidationMiddleware, async (req, r
         cuisineType,
         difficulty
     } = req.validatedRecipe;
-    
+
     try {
         // Use findByIdAndUpdate with ownership check via query filter
         const updatedRecipe = await Recipe.findByIdAndUpdate(
@@ -269,20 +221,22 @@ router.post(`/edit-${STUDENT_ID}/:id`, recipeValidationMiddleware, async (req, r
         );
 
         if (!updatedRecipe) {
-            return res.status(404).render('errors/404', {
-                title: 'Recipe Not Found - CloudKitchen Pro',
-                userId: req.user && req.user.userId ? req.user.userId : '',
-                STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-                STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+            return res.status(404).json({
+                success: false,
+                error: 'Recipe not found'
             });
         }
 
-        // Redirect back with success message
-        res.redirect(`/recipe/recipes-${STUDENT_ID}?userId=${req.user.userId}&msg=${encodeURIComponent(updatedRecipe.title + ' (' + updatedRecipe.recipeId + ') updated successfully')}`);
+        // Return success response with updated recipe
+        return res.status(200).json({
+            success: true,
+            message: 'Recipe updated successfully',
+            data: updatedRecipe
+        });
     } catch (error) {
         console.error('Error updating recipe:', error);
 
-        // Prepare errors and re-render edit page with form data
+        // Prepare errors and return JSON error response
         let errors = [];
         if (error.name === 'ValidationError') {
             for (let field in error.errors) {
@@ -294,21 +248,9 @@ router.post(`/edit-${STUDENT_ID}/:id`, recipeValidationMiddleware, async (req, r
             errors.push('An error occurred while updating the recipe.');
         }
 
-        // Build a formData object similar to add form to repopulate fields
-        const formData = req.body;
-
-        res.status(400).render('recipe/edit-recipe', {
-            title: 'Edit Recipe - CloudKitchen Pro',
-            isLoggedIn: true,
-            user: req.user,
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME,
-            errors: errors,
-            recipe: recipeToEdit,
-            formData: formData,
-            MEAL_TYPES: MEAL_TYPES,
-            CUISINE_TYPES: CUISINE_TYPES,
-            DIFFICULTY_TYPES: DIFFICULTY_TYPES
+        return res.status(400).json({
+            success: false,
+            errors: errors
         });
     }
 });
@@ -317,38 +259,36 @@ router.post(`/edit-${STUDENT_ID}/:id`, recipeValidationMiddleware, async (req, r
 // RECIPE DELETION ROUTES
 // ============================================
 
-// POST - Delete a recipe
-router.post(`/delete-${STUDENT_ID}`, async (req, res) => {
+// DELETE - Delete a recipe (JSON API)
+router.delete(`/delete-${STUDENT_ID}/:id`, async (req, res) => {
     try {
         const userId = req.user.userId;
-        const id = req.body.id; // expecting MongoDB _id from the listing form
+        const id = req.params.id; // expecting MongoDB _id from the URL parameter
 
         // Find and delete the recipe if it belongs to the logged-in user
-        const toDeleteRecipe = await Recipe.findOne({ _id: id, userId: userId });
-        const deletedRecipe = await Recipe.findByIdAndDelete(id);
-        
-        // If no recipe was found to delete, show 404
+        const deletedRecipe = await Recipe.findOneAndDelete({ _id: id, userId: userId });
+
+        // If no recipe was found to delete, return 404
         if (!deletedRecipe) {
-            return res.status(404).render('errors/404', {
-                title: 'Recipe Not Found - CloudKitchen Pro',
-                userId: req.user && req.user.userId ? req.user.userId : '',
-                STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-                STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+            return res.status(404).json({
+                success: false,
+                error: 'Recipe not found'
             });
         }
 
-    // Redirect back to recipes list after successful deletion with toast message
-    const idLabel = toDeleteRecipe && toDeleteRecipe.recipeId ? `(${toDeleteRecipe.recipeId})` : `(_id:${toDeleteRecipe._id})`;
-    res.redirect(`/recipe/recipes-${STUDENT_ID}?userId=${req.user.userId}&msg=${encodeURIComponent(toDeleteRecipe.title + ' ' + idLabel + ' deleted successfully')}`);
+        // Return success response
+        return res.status(200).json({
+            success: true,
+            message: 'Recipe deleted successfully',
+            data: deletedRecipe
+        });
     }
     catch (error) {
         // unexpected server error
         console.error('Error deleting recipe:', error);
-        res.status(500).render('errors/500', {
-            title: 'Error - CloudKitchen Pro',
-            userId: req.user && req.user.userId ? req.user.userId : '',
-            STUDENT_ID: req.app.locals.STUDENT_ID || STUDENT_ID,
-            STUDENT_NAME: req.app.locals.STUDENT_NAME || STUDENT_NAME
+        return res.status(500).json({
+            success: false,
+            error: 'Failed to delete recipe'
         });
     }
 });
@@ -366,94 +306,104 @@ router.get(`/availability-${STUDENT_ID}`, async (req, res) => {
             // Lookup inventory items documents
             // each recipe will have an "inventory" array of all inventory items
             // e.g. recipe.inventory = [ { ingredientName: 'eggs' }, { ingredientName: 'milk' }, ... ]
-            { $lookup: {
-                from: 'inventories',
-                let: { ingredients: '$ingredients' },
-                pipeline: [
-                { $project: { ingredientName: 1 } }
-                ],
-                as: 'inventory'
-            } },
+            {
+                $lookup: {
+                    from: 'inventories',
+                    let: { ingredients: '$ingredients' },
+                    pipeline: [
+                        { $project: { ingredientName: 1 } }
+                    ],
+                    as: 'inventory'
+                }
+            },
             // Create an array of lowercased inventory ingredient names for easier matching
             // e.g. recipe.inventoryNames = [ 'eggs', 'milk', ... ]
-            { $addFields: {
-                inventoryNames: {
-                    $map: {
-                        input: '$inventory',
-                        as: 'inv',
-                        in: { $toLower: '$$inv.ingredientName' }
+            {
+                $addFields: {
+                    inventoryNames: {
+                        $map: {
+                            input: '$inventory',
+                            as: 'inv',
+                            in: { $toLower: '$$inv.ingredientName' }
+                        }
                     }
                 }
-            } },
-            { $addFields: {
-                // Available ingredients array for each recipe
-                // filter inventoryNames to see if any match each ingredient (case-insensitive, substring)
-                available: {
-                    $filter: {
-                        input: "$ingredients",
-                        as: "ing",
-                        cond: {
-                        // check if any inventory item matches this ingredient, true if at least one match
-                        $anyElementTrue: {
-                            $map: {
-                            input: "$inventoryNames",
-                            as: "inv",
-                            in: {
-                                // check if inventory item name is a substring of the ingredient (case-insensitive)
-                                // indexOfCP returns -1 if not found, so gt > -1 means found
-                                $gt: [{ $indexOfCP: [ { $toLower: "$$ing" }, "$$inv" ] }, -1]
-                            }
-                            }
-                        }
-                        }
-                    }
-                },
-                // Missing ingredients array for each recipe
-                // filter inventoryNames to see if any not match each ingredient (case-insensitive, substring)
-                missing: {
-                    $filter: {
-                        input: "$ingredients",
-                        as: "ing",
-                        cond: {
-                            // check if no inventory item matches this ingredient, true if none match
-                            $not: {
+            },
+            {
+                $addFields: {
+                    // Available ingredients array for each recipe
+                    // filter inventoryNames to see if any match each ingredient (case-insensitive, substring)
+                    available: {
+                        $filter: {
+                            input: "$ingredients",
+                            as: "ing",
+                            cond: {
+                                // check if any inventory item matches this ingredient, true if at least one match
                                 $anyElementTrue: {
-                                $map: {
-                                    input: "$inventoryNames",
-                                    as: "inv",
-                                    in: {
-                                        // check if inventory item name is a substring of the ingredient (case-insensitive)
-                                        // indexOfCP returns -1 if not found, so gt > -1 means found
-                                        $gt: [{ $indexOfCP: [ { $toLower: "$$ing" }, "$$inv" ] }, -1]
+                                    $map: {
+                                        input: "$inventoryNames",
+                                        as: "inv",
+                                        in: {
+                                            // check if inventory item name is a substring of the ingredient (case-insensitive)
+                                            // indexOfCP returns -1 if not found, so gt > -1 means found
+                                            $gt: [{ $indexOfCP: [{ $toLower: "$$ing" }, "$$inv"] }, -1]
+                                        }
                                     }
                                 }
+                            }
+                        }
+                    },
+                    // Missing ingredients array for each recipe
+                    // filter inventoryNames to see if any not match each ingredient (case-insensitive, substring)
+                    missing: {
+                        $filter: {
+                            input: "$ingredients",
+                            as: "ing",
+                            cond: {
+                                // check if no inventory item matches this ingredient, true if none match
+                                $not: {
+                                    $anyElementTrue: {
+                                        $map: {
+                                            input: "$inventoryNames",
+                                            as: "inv",
+                                            in: {
+                                                // check if inventory item name is a substring of the ingredient (case-insensitive)
+                                                // indexOfCP returns -1 if not found, so gt > -1 means found
+                                                $gt: [{ $indexOfCP: [{ $toLower: "$$ing" }, "$$inv"] }, -1]
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            } },
+            },
             // Calculate percentage of available ingredients (available / total * 100)
-            { $addFields: {
-                percent: {
-                    $floor: {
-                        $multiply: [ { $divide: [ { $size: '$available' }, { $size: '$ingredients' } ] }, 100 ]
+            {
+                $addFields: {
+                    percent: {
+                        $floor: {
+                            $multiply: [{ $divide: [{ $size: '$available' }, { $size: '$ingredients' }] }, 100]
+                        }
                     }
                 }
-            } },
+            },
             // Determine availability status based on percentage
-            { $addFields: {
-                status: {
-                    $switch: {
-                        branches: [
-                            { case: { $eq: ['$percent', 100] }, then: 'Ready to Cook!' },
-                            { case: { $gte: ['$percent', 60] }, then: 'Mostly Available' },
-                            { case: { $gte: ['$percent', 30] }, then: 'Partially Available' },
-                        ],
-                        default: 'Not Available'
+            {
+                $addFields: {
+                    status: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ['$percent', 100] }, then: 'Ready to Cook!' },
+                                { case: { $gte: ['$percent', 60] }, then: 'Mostly Available' },
+                                { case: { $gte: ['$percent', 30] }, then: 'Partially Available' },
+                            ],
+                            default: 'Not Available'
+                        }
                     }
                 }
-            } },
+            },
             // Project only necessary fields for the view
             // recipe: ROOT, preserve all fields in the recipe document (including additional fields created in pipeline)
             { $project: { recipe: '$$ROOT', available: 1, missing: 1, percent: 1, status: 1 } },
@@ -467,64 +417,74 @@ router.get(`/availability-${STUDENT_ID}`, async (req, res) => {
             // Lookup inventory items documents
             // each recipe will have an "inventory" array of all inventory items
             // e.g. recipe.inventory = [ { ingredientName: 'eggs' }, { ingredientName: 'milk' }, ... ]
-            { $lookup: {
-                from: 'inventories',
-                let: { ingredients: '$ingredients' },
-                pipeline: [
-                { $project: { ingredientName: 1 } }
-                ],
-                as: 'inventory'
-            } },
+            {
+                $lookup: {
+                    from: 'inventories',
+                    let: { ingredients: '$ingredients' },
+                    pipeline: [
+                        { $project: { ingredientName: 1 } }
+                    ],
+                    as: 'inventory'
+                }
+            },
             // Create an array of lowercased inventory ingredient names for easier matching
             // e.g. recipe.inventoryNames = [ 'eggs', 'milk', ... ]
-            { $addFields: {
-                inventoryNames: {
-                    $map: {
-                        input: '$inventory',
-                        as: 'inv',
-                        in: { $toLower: '$$inv.ingredientName' }
+            {
+                $addFields: {
+                    inventoryNames: {
+                        $map: {
+                            input: '$inventory',
+                            as: 'inv',
+                            in: { $toLower: '$$inv.ingredientName' }
+                        }
                     }
                 }
-            } },
+            },
             // Available ingredients array, used for calculating availability percentage
-            { $addFields: {
-                available: {
-                    $filter: {
-                        input: '$ingredients',
-                        as: 'ing',
-                        cond: {
-                            $anyElementTrue: {
-                                $map: {
-                                    input: '$inventoryNames',
-                                    as: 'inv',
-                                    in: { $gt: [ { $indexOfCP: [ { $toLower: '$$ing' }, '$$inv' ] }, -1 ] }
+            {
+                $addFields: {
+                    available: {
+                        $filter: {
+                            input: '$ingredients',
+                            as: 'ing',
+                            cond: {
+                                $anyElementTrue: {
+                                    $map: {
+                                        input: '$inventoryNames',
+                                        as: 'inv',
+                                        in: { $gt: [{ $indexOfCP: [{ $toLower: '$$ing' }, '$$inv'] }, -1] }
+                                    }
                                 }
                             }
                         }
-                    }
-                },
-            } },
+                    },
+                }
+            },
             // Calculate percentage of available ingredients (available / total * 100)
-            { $addFields: {
-                percent: {
-                    $floor: {
-                        $multiply: [ { $divide: [ { $size: '$available' }, { $size: '$ingredients' } ] }, 100 ]
+            {
+                $addFields: {
+                    percent: {
+                        $floor: {
+                            $multiply: [{ $divide: [{ $size: '$available' }, { $size: '$ingredients' }] }, 100]
+                        }
                     }
                 }
-            } },
+            },
             // Determine availability status based on percentage
-            { $addFields: {
-                status: {
-                    $switch: {
-                        branches: [
-                            { case: { $eq: ['$percent', 100] }, then: 'Ready to Cook!' },
-                            { case: { $gte: ['$percent', 60] }, then: 'Mostly Available' },
-                            { case: { $gte: ['$percent', 30] }, then: 'Partially Available' },
-                        ],
-                        default: 'Not Available'
+            {
+                $addFields: {
+                    status: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ['$percent', 100] }, then: 'Ready to Cook!' },
+                                { case: { $gte: ['$percent', 60] }, then: 'Mostly Available' },
+                                { case: { $gte: ['$percent', 30] }, then: 'Partially Available' },
+                            ],
+                            default: 'Not Available'
+                        }
                     }
                 }
-            } },
+            },
             { $project: { recipe: '$$ROOT', available: 1, missing: 1, percent: 1, status: 1 } },
             // Only suggest recipes that are fully available (100% of ingredients)
             { $match: { percent: 100 } },
