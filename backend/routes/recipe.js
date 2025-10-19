@@ -688,3 +688,69 @@ router.post(`/translate-${STUDENT_ID}`, async (req, res) => {
         });
     }
 });
+
+// ============================================
+// RECIPE TEXT-TO-SPEECH ROUTE (HD TASK 3)
+// ============================================
+
+// POST - Generate speech for recipe instructions (JSON API)
+router.post(`/text-to-speech-${STUDENT_ID}`, async (req, res) => {
+    try {
+        const { instructions, recipeTitle, languageCode, voiceName, speakingRate } = req.body;
+
+        // Validate input
+        if (!instructions || !Array.isArray(instructions) || instructions.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Instructions array is required and must not be empty'
+            });
+        }
+
+        if (!recipeTitle || typeof recipeTitle !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Recipe title is required and must be a string'
+            });
+        }
+
+        // Import TTS service
+        const ttsService = require('../utils/ttsService');
+
+        // Check if TTS service is initialized
+        if (!ttsService.isInitialized()) {
+            return res.status(503).json({
+                success: false,
+                error: 'Text-to-Speech service is not available. Please check Google Cloud credentials.'
+            });
+        }
+
+        // Format instructions for speech
+        const formattedText = ttsService.formatInstructionsForSpeech(instructions);
+
+        // Generate speech audio
+        const audioBuffer = await ttsService.synthesizeSpeech(formattedText, {
+            languageCode: languageCode || 'en-US',
+            voiceName: voiceName || 'en-US-Neural2-A',
+            speakingRate: speakingRate || 1.0
+        });
+
+        // Convert buffer to base64 for transmission
+        const audioBase64 = audioBuffer.toString('base64');
+
+        // Return audio as base64 data URL
+        return res.status(200).json({
+            success: true,
+            data: {
+                audioBase64: audioBase64,
+                contentType: 'audio/mpeg',
+                recipeTitle: recipeTitle
+            }
+        });
+    } catch (error) {
+        console.error('Error in recipe text-to-speech:', error);
+        return res.status(500).json({
+            success: false,
+            error: `Failed to generate speech: ${error.message}`
+        });
+    }
+});

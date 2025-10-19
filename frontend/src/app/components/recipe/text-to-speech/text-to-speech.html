@@ -1,0 +1,119 @@
+<div class="card shadow mb-4 tts-card" style="border-radius:1.5rem;">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
+        style="border-radius: 1.5rem 1.5rem 0 0;">
+        <h4 class="mt-2 mb-2">Text-to-Speech (HD Task 3)</h4>
+        <button class="btn btn-light btn-sm" (click)="generateSpeech()"
+            [disabled]="isGenerating || !instructions || instructions.length === 0">
+            @if (isGenerating) {
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Generating...
+            } @else {
+            Generate Speech
+            }
+        </button>
+    </div>
+
+    <div class="card-body p-4">
+        <!-- Error Message -->
+        @if (error) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" aria-label="Close" (click)="clearError()"></button>
+        </div>
+        }
+
+        <!-- Success Message -->
+        @if (successMessage) {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ successMessage }}
+            <button type="button" class="btn-close" aria-label="Close" (click)="clearSuccess()"></button>
+        </div>
+        }
+
+        <!-- Voice Options -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Voice</label>
+                <select class="form-select" [(ngModel)]="selectedVoice" [disabled]="isGenerating">
+                    @for (voice of availableVoices; track voice.value) {
+                    <option [value]="voice.value">{{ voice.name }}</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Speaking Rate</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="range" class="form-range flex-grow-1" min="0.5" max="2" step="0.1"
+                        [(ngModel)]="speakingRate" [disabled]="isGenerating">
+                    <span class="badge bg-primary">{{ speakingRate.toFixed(1) }}x</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio Controls -->
+        @if (audioUrl) {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="audio-player card border-light">
+                    <div class="card-body p-3">
+                        <!-- Player Controls -->
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <button class="btn btn-primary btn-sm" (click)="togglePlayPause()" title="Play/Pause">
+                                @if (isPlaying) {
+                                Pause
+                                } @else {
+                                Play
+                                }
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" (click)="stopAudio()" title="Stop">
+                                Stop
+                            </button>
+                            <span class="text-muted ms-auto">
+                                {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+                            </span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="mb-3">
+                            <div class="progress" style="height: 6px; cursor: pointer;"
+                                (click)="onProgressClick($event)">
+                                <div class="progress-bar bg-success" role="progressbar"
+                                    [style.width.%]="getProgressPercentage()"
+                                    [attr.aria-valuenow]="getProgressPercentage()" aria-valuemin="0"
+                                    aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
+                        <!-- Volume Control -->
+                        <div class="d-flex align-items-center gap-2">
+                            <span>Vol:</span>
+                            <input type="range" class="form-range flex-grow-1" min="0" max="1" step="0.05"
+                                [value]="volume" (input)="setVolume(+$event.target.value)" title="Volume Control">
+                            <span class="text-muted small">{{ (volume * 100).toFixed(0) }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        } @else if (!isGenerating) {
+        <div class="text-center text-muted py-4">
+            <p class="mb-0">Click "Generate Speech" to create audio from the recipe instructions.</p>
+        </div>
+        }
+
+        <!-- Recipe Instructions Preview -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h5 class="text-muted mb-3">Instructions to be converted to speech:</h5>
+                <ol class="list-group list-group-flush">
+                    @for (instruction of instructions; track instruction; let i = $index) {
+                    <li class="list-group-item ps-4 mb-2 d-flex gap-3">
+                        <span class="fw-bold fs-6 flex-shrink-0">{{ i + 1 }}</span>
+                        <span>{{ instruction }}</span>
+                    </li>
+                    }
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

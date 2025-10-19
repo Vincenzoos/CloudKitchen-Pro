@@ -116,6 +116,16 @@ export interface TranslationResponse {
   error?: string;
 }
 
+export interface TextToSpeechResponse {
+  success: boolean;
+  data?: {
+    audioBase64: string;
+    contentType: string;
+    recipeTitle: string;
+  };
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -239,6 +249,25 @@ export class Database {
     return this.http.post<TranslationResponse>(
       `${BASE_API_URL}/recipe/translate-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
       { ingredients, instructions, targetLanguage },
+      httpOptions
+    );
+  }
+
+  // ============================================
+  // HD TASK 3 - TEXT-TO-SPEECH API
+  // ============================================
+
+  // Generate speech for recipe instructions
+  generateRecipeSpeech(instructions: string[], recipeTitle: string, userId: string, options?: any): Observable<TextToSpeechResponse> {
+    return this.http.post<TextToSpeechResponse>(
+      `${BASE_API_URL}/recipe/text-to-speech-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      {
+        instructions,
+        recipeTitle,
+        languageCode: options?.languageCode || 'en-US',
+        voiceName: options?.voiceName || 'en-US-Neural2-A',
+        speakingRate: options?.speakingRate || 1.0
+      },
       httpOptions
     );
   }

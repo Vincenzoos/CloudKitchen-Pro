@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Database, Recipe, RecipeResponse, HealthAnalysisResponse, TranslationResponse } from '../../../services/database';
 import { LanguageSelector } from '../../shared/language-selector/language-selector';
+import { TextToSpeech } from '../text-to-speech/text-to-speech';
 
 const STUDENT_ID = "33810672";
 
 @Component({
     selector: 'app-recipe-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, LanguageSelector],
+    imports: [CommonModule, RouterModule, LanguageSelector, TextToSpeech],
     templateUrl: './recipe-detail.html',
     styleUrls: ['./recipe-detail.css']
 })

@@ -340,6 +340,12 @@
             </div>
             }
 
+            <!-- Text-to-Speech Component (HD Task 3) -->
+            @if (recipe && recipe.instructions) {
+            <app-text-to-speech [recipeTitle]="recipe.title" [instructions]="recipe.instructions" [userId]="userId">
+            </app-text-to-speech>
+            }
+
             <!-- Action Buttons -->
             <div class="d-flex justify-content-center gap-2 mb-4">
                 @if (recipe.userId === userId) {

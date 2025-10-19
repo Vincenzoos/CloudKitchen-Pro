@@ -13,6 +13,10 @@ const STUDENT_NAME = "Viet Tran";
 const dbCheck = require('./middleware/dbCheck');
 // Import CORS middleware
 const cors = require('cors');
+// Import Socket.io
+const socketIo = require('socket.io');
+// Import TTS Service
+const ttsService = require('./utils/ttsService');
 
 
 // Create an Express application instance
@@ -182,6 +186,68 @@ async function startServer() {
     // Start the server immediately
     const server = app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
+    });
+
+    // Initialize Socket.io for real-time communication (for text-to-speech)
+    const io = socketIo(server, {
+        cors: {
+            origin: 'http://localhost:4200',  // Allow Angular dev server
+            methods: ['GET', 'POST'],
+            credentials: true
+        }
+    });
+
+    // Socket.io event handlers
+    io.on('connection', (socket) => {
+        console.log(`Client connected: ${socket.id}`);
+
+        // Handle text-to-speech request
+        socket.on('generate-speech', async (data) => {
+            try {
+                console.log(`Generating speech for recipe: ${data.recipeTitle}`);
+
+                // Validate input
+                if (!data.instructions || !Array.isArray(data.instructions) || data.instructions.length === 0) {
+                    socket.emit('speech-error', {
+                        error: 'Instructions array is required and must not be empty'
+                    });
+                    return;
+                }
+
+                // Format instructions for speech
+                const formattedText = ttsService.formatInstructionsForSpeech(data.instructions);
+
+                // Generate speech audio
+                const audioBuffer = await ttsService.synthesizeSpeech(formattedText, {
+                    languageCode: data.languageCode || 'en-US',
+                    voiceName: data.voiceName || 'en-US-Neural2-A',
+                    speakingRate: data.speakingRate || 1.0
+                });
+
+                // Convert buffer to base64 for transmission over Socket.io
+                const audioBase64 = audioBuffer.toString('base64');
+
+                // Send audio back to client
+                socket.emit('speech-generated', {
+                    success: true,
+                    audioBase64: audioBase64,
+                    contentType: 'audio/mpeg',
+                    recipeTitle: data.recipeTitle
+                });
+
+                console.log(`Speech generated successfully for: ${data.recipeTitle}`);
+            } catch (error) {
+                console.error('Error generating speech:', error);
+                socket.emit('speech-error', {
+                    error: `Failed to generate speech: ${error.message}`
+                });
+            }
+        });
+
+        // Handle disconnect
+        socket.on('disconnect', () => {
+            console.log(`Client disconnected: ${socket.id}`);
+        });
     });
 
     try {
