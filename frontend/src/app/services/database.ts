@@ -95,6 +95,18 @@ export interface InventoryFormOptionsResponse {
   error?: string;
 }
 
+export interface HealthAnalysisResponse {
+  success: boolean;
+  data?: {
+    healthScore: number;
+    concerns: string[];
+    benefits: string[];
+    suggestions: string[];
+    alternatives: { [key: string]: string };
+  };
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -190,6 +202,15 @@ export class Database {
   getRecipeFormOptions(): Observable<FormOptionsResponse> {
     return this.http.get<FormOptionsResponse>(
       `${BASE_API_URL}/recipe/form-options-${STUDENT_ID}`,
+      httpOptions
+    );
+  }
+
+  // Analyze recipe health using AI
+  analyzeRecipeHealth(ingredients: string[], userId: string): Observable<HealthAnalysisResponse> {
+    return this.http.post<HealthAnalysisResponse>(
+      `${BASE_API_URL}/recipe/analyze-health-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      { ingredients },
       httpOptions
     );
   }

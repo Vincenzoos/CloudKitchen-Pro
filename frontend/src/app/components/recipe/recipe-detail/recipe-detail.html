@@ -125,6 +125,136 @@
                 </div>
             </div>
 
+            <!-- Health Analysis Section -->
+            @if (recipe) {
+            <div class="card shadow mb-4" style="border-radius:1.5rem;">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+                    style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h4 class="mt-2 mb-2">Health Analysis</h4>
+                    <button class="btn btn-light btn-sm" (click)="analyzeHealth()" [disabled]="analyzingHealth">
+                        @if (analyzingHealth) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Analyzing...
+                        } @else {
+                        Analyze Health
+                        }
+                    </button>
+                </div>
+                <div class="card-body p-4">
+                    @if (healthAnalysisError) {
+                    <div class="alert alert-danger">
+                        {{ healthAnalysisError }}
+                    </div>
+                    }
+
+                    @if (healthAnalysis) {
+                    <!-- Health Score -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h5>Health Score</h5>
+                            <div class="display-4 fw-bold {{ getHealthScoreClass(healthAnalysis.healthScore) }}">
+                                {{ healthAnalysis.healthScore }}/10
+                            </div>
+                            <span class="badge {{ getHealthScoreBadgeClass(healthAnalysis.healthScore) }} fs-6">
+                                @if (healthAnalysis.healthScore >= 8) {
+                                Excellent
+                                } @else if (healthAnalysis.healthScore >= 6) {
+                                Good
+                                } @else if (healthAnalysis.healthScore >= 4) {
+                                Fair
+                                } @else {
+                                Needs Improvement
+                                }
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Health Concerns -->
+                    @if (healthAnalysis.concerns && healthAnalysis.concerns.length > 0) {
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-danger">Health Concerns</h5>
+                            <ul class="list-group">
+                                @for (concern of healthAnalysis.concerns; track concern) {
+                                <li class="list-group-item list-group-item-danger">
+                                    {{ concern }}
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Nutritional Benefits -->
+                    @if (healthAnalysis.benefits && healthAnalysis.benefits.length > 0) {
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-success">Nutritional Benefits</h5>
+                            <ul class="list-group">
+                                @for (benefit of healthAnalysis.benefits; track benefit) {
+                                <li class="list-group-item list-group-item-success">
+                                    {{ benefit }}
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Improvement Suggestions -->
+                    @if (healthAnalysis.suggestions && healthAnalysis.suggestions.length > 0) {
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary">Improvement Suggestions</h5>
+                            <ul class="list-group">
+                                @for (suggestion of healthAnalysis.suggestions; track suggestion) {
+                                <li class="list-group-item">
+                                    {{ suggestion }}
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Alternative Ingredients -->
+                    @if (healthAnalysis.alternatives?.length) {
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="text-info">Alternative Ingredients</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Original Ingredient</th>
+                                            <th>Healthier Alternative</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (alt of healthAnalysis.alternatives; track alt) {
+                                        <tr>
+                                            <td>{{ alt.original }}</td>
+                                            <td>{{ alt.alternative }}</td>
+                                            <td>{{ alt.reason }}</td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    } @else if (!analyzingHealth && !healthAnalysisError) {
+                    <div class="text-center text-muted">
+                        <p>Click "Analyze Health" to get AI-powered nutritional analysis and improvement suggestions for
+                            this recipe.</p>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+
             <!-- Action Buttons -->
             <div class="d-flex justify-content-center gap-2 mb-4">
                 @if (recipe.userId === userId) {

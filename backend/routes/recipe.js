@@ -6,6 +6,7 @@ const { requireLogin, authorizeRoles } = require('../middleware/auth');
 const STUDENT_ID = '33810672';
 const { MEAL_TYPES, CUISINE_TYPES, DIFFICULTY_TYPES } = require('../utils/recipe/constants');
 const STUDENT_NAME = 'Viet Tran';
+const aiService = require('../utils/aiService');
 
 const router = express.Router();
 
@@ -321,6 +322,46 @@ router.delete(`/delete-${STUDENT_ID}/:id`, async (req, res) => {
         return res.status(500).json({
             success: false,
             error: 'Failed to delete recipe'
+        });
+    }
+});
+
+// ============================================
+// RECIPE HEALTH ANALYSIS ROUTE (HD TASK 1)
+// ============================================
+
+// POST - Analyze recipe health using AI (JSON API)
+router.post(`/analyze-health-${STUDENT_ID}`, async (req, res) => {
+    try {
+        const { ingredients } = req.body;
+
+        // Validate input
+        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Ingredients array is required and must not be empty'
+            });
+        }
+
+        // Call AI service to analyze health
+        const analysisResult = await aiService.analyzeRecipeHealth(ingredients);
+
+        if (analysisResult.success) {
+            return res.status(200).json({
+                success: true,
+                data: analysisResult.analysis
+            });
+        } else {
+            return res.status(500).json({
+                success: false,
+                error: analysisResult.error
+            });
+        }
+    } catch (error) {
+        console.error('Error in health analysis:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Failed to analyze recipe health'
         });
     }
 });

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Database, Recipe, RecipeResponse } from '../../../services/database';
+import { Database, Recipe, RecipeResponse, HealthAnalysisResponse } from '../../../services/database';
 
 const STUDENT_ID = "33810672";
 
@@ -18,6 +18,12 @@ export class RecipeDetail implements OnInit {
     error: string = '';
     userId: string = '';
     STUDENT_ID = STUDENT_ID;
+
+    // Health analysis properties
+    healthAnalysis: any = null;
+    analyzingHealth: boolean = false;
+    healthAnalysisError: string = '';
+    showHealthAnalysis: boolean = false;
 
     constructor(
         private database: Database,
@@ -80,6 +86,49 @@ export class RecipeDetail implements OnInit {
         this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
             queryParams: { userId: this.userId }
         });
+    }
+
+    // Analyze recipe health using AI
+    analyzeHealth(): void {
+        if (!this.recipe || !this.recipe.ingredients) {
+            this.healthAnalysisError = 'No ingredients available for analysis';
+            return;
+        }
+
+        this.analyzingHealth = true;
+        this.healthAnalysisError = '';
+        this.healthAnalysis = null;
+
+        this.database.analyzeRecipeHealth(this.recipe.ingredients, this.userId).subscribe({
+            next: (response: HealthAnalysisResponse) => {
+                if (response.success && response.data) {
+                    this.healthAnalysis = response.data;
+                    this.showHealthAnalysis = true;
+                } else {
+                    this.healthAnalysisError = response.error || 'Failed to analyze recipe health';
+                }
+                this.analyzingHealth = false;
+            },
+            error: (err: any) => {
+                console.error('Error analyzing health:', err);
+                this.healthAnalysisError = 'Failed to analyze recipe health. Please try again.';
+                this.analyzingHealth = false;
+            }
+        });
+    }
+
+    // Get health score color class
+    getHealthScoreClass(score: number): string {
+        if (score >= 8) return 'text-success';
+        if (score >= 6) return 'text-warning';
+        return 'text-danger';
+    }
+
+    // Get health score badge class
+    getHealthScoreBadgeClass(score: number): string {
+        if (score >= 8) return 'bg-success';
+        if (score >= 6) return 'bg-warning';
+        return 'bg-danger';
     }
 
     // Get badge color based on difficulty

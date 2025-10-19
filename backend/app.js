@@ -1,3 +1,6 @@
+// Load environment variables from .env file
+require('dotenv').config();
+
 // Import the Express framework - this is the core of our web application
 const express = require('express');
 const ejs = require("ejs");
