@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Database, Recipe, RecipesListResponse, RecipeResponse } from '../../../services/database';
 import { ToastNotificationComponent } from '../../shared/toast-notification/toast-notification';
 
@@ -15,6 +16,7 @@ const STUDENT_ID = "33810672";
 })
 export class RecipeList implements OnInit {
     @ViewChild(ToastNotificationComponent) toastComponent!: ToastNotificationComponent;
+    @ViewChild('deleteConfirmModal') deleteConfirmModal!: any;
 
     recipes: Recipe[] = [];
     loading: boolean = true;
@@ -29,7 +31,8 @@ export class RecipeList implements OnInit {
     constructor(
         private database: Database,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private modalService: NgbModal
     ) { }
 
     ngOnInit(): void {
@@ -97,30 +100,25 @@ export class RecipeList implements OnInit {
     // Open delete confirmation modal
     confirmDelete(recipe: Recipe): void {
         this.recipeToDelete = recipe;
-        // Open Bootstrap modal
-        const modalElement = document.getElementById('deleteConfirmModal');
-        if (modalElement) {
-            const modal = new (window as any).bootstrap.Modal(modalElement);
-            modal.show();
-        }
+        this.modalService.open(this.deleteConfirmModal, {
+            centered: true,
+            backdrop: 'static'
+        });
     }
 
     // Cancel deletion
-    cancelDelete(): void {
+    cancelDelete(modal: any): void {
+        modal.dismiss('cancel');
         this.recipeToDelete = null;
-        const modalElement = document.getElementById('deleteConfirmModal');
-        if (modalElement) {
-            const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
-            modal?.hide();
-        }
     }
 
     // Perform deletion
-    deleteRecipe(): void {
+    deleteRecipe(modal: any): void {
         if (!this.recipeToDelete || !this.recipeToDelete._id) return;
 
         if (!this.userId) {
             this.error = 'User not logged in';
+            modal.close();
             return;
         }
 
@@ -132,16 +130,19 @@ export class RecipeList implements OnInit {
                 if (response.success) {
                     this.showToast(`Recipe "${title}" deleted successfully`);
                     this.loadRecipes(); // Reload the list
-                    this.cancelDelete(); // Close modal
+                    modal.close('deleted');
+                    this.recipeToDelete = null;
                 } else {
                     this.error = response.error || 'Failed to delete recipe';
-                    this.cancelDelete();
+                    modal.close();
+                    this.recipeToDelete = null;
                 }
             },
             error: (err: any) => {
                 console.error('Error deleting recipe:', err);
                 this.error = 'Failed to delete recipe. Please try again.';
-                this.cancelDelete();
+                modal.close();
+                this.recipeToDelete = null;
             }
         });
     }

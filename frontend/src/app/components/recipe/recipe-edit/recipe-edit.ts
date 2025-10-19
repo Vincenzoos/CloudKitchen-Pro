@@ -6,7 +6,6 @@ import { Database, RecipeResponse, FormOptionsResponse } from '../../../services
 
 const STUDENT_ID = "33810672";
 
-// TODO: Look at w10 on how to use  Confirmation Dialogs with ng-bootstrap, might need to replace toast with that
 @Component({
     selector: 'app-recipe-edit',
     standalone: true,
