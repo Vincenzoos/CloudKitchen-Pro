@@ -37,9 +37,9 @@ app.use(express.urlencoded({ extended: true }));
 // Add JSON parsing for API requests (e.g., from Angular frontend)
 app.use(express.json());
 
-// Enable CORS for all routes - adjust settings as needed
+// Enable CORS for all routes
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:4200',  // Allow Angular dev server or production frontend
+    origin: 'http://localhost:4200',
     credentials: true  // If using cookies/auth
 }));
 
@@ -137,7 +137,7 @@ async function startServer() {
     // Initialize Socket.io for real-time communication (for text-to-speech)
     const io = socketIo(server, {
         cors: {
-            origin: process.env.FRONTEND_URL || 'http://localhost:4200',  // Allow Angular dev server or production frontend
+            origin: 'http://localhost:4200',  // Allow Angular dev server or production frontend
             methods: ['GET', 'POST'],
             credentials: true
         }
