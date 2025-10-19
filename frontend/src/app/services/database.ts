@@ -53,6 +53,48 @@ export interface FormOptionsResponse {
   error?: string;
 }
 
+// Inventory interface to match backend model
+export interface InventoryItem {
+  _id?: string;
+  inventoryId?: string;
+  userId?: string;
+  ingredientName: string;
+  category: string;
+  quantity: number;
+  unit: string;
+  purchaseDate: string | Date;
+  expirationDate: string | Date;
+  location: string;
+  cost: number;
+  createdDate?: string | Date;
+}
+
+// Inventory Response interfaces
+export interface InventoryResponse {
+  success: boolean;
+  data?: InventoryItem;
+  message?: string;
+  error?: string;
+  errors?: string[];
+}
+
+export interface InventoryListResponse {
+  success: boolean;
+  data?: InventoryItem[];
+  count?: number;
+  error?: string;
+}
+
+export interface InventoryFormOptionsResponse {
+  success: boolean;
+  data?: {
+    allowedUnits: string[];
+    allowedCategories: string[];
+    allowedLocations: string[];
+  };
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -137,6 +179,61 @@ export class Database {
   getRecipeFormOptions(): Observable<FormOptionsResponse> {
     return this.http.get<FormOptionsResponse>(
       `${BASE_API_URL}/recipe/form-options-${STUDENT_ID}`,
+      httpOptions
+    );
+  }
+
+  // ============================================
+  // INVENTORY METHODS
+  // ============================================
+
+  // Get all inventory items for the logged-in user
+  getAllInventory(userId: string): Observable<InventoryListResponse> {
+    return this.http.get<InventoryListResponse>(
+      `${BASE_API_URL}/inventory/inventories-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      httpOptions
+    );
+  }
+
+  // Get a single inventory item by ID
+  getInventoryById(id: string, userId: string): Observable<InventoryResponse> {
+    return this.http.get<InventoryResponse>(
+      `${BASE_API_URL}/inventory/edit-${STUDENT_ID}/${id}?userId=${encodeURIComponent(userId)}`,
+      httpOptions
+    );
+  }
+
+  // Create a new inventory item
+  createInventory(item: InventoryItem, userId: string): Observable<InventoryResponse> {
+    return this.http.post<InventoryResponse>(
+      `${BASE_API_URL}/inventory/add-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      item,
+      httpOptions
+    );
+  }
+
+  // Update an existing inventory item
+  updateInventory(id: string, item: InventoryItem, userId: string): Observable<InventoryResponse> {
+    return this.http.post<InventoryResponse>(
+      `${BASE_API_URL}/inventory/edit-${STUDENT_ID}/${id}?userId=${encodeURIComponent(userId)}`,
+      item,
+      httpOptions
+    );
+  }
+
+  // Delete an inventory item
+  deleteInventory(id: string, userId: string): Observable<InventoryResponse> {
+    return this.http.post<InventoryResponse>(
+      `${BASE_API_URL}/inventory/delete-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      { id },
+      httpOptions
+    );
+  }
+
+  // Get inventory form options (units, categories, locations)
+  getInventoryFormOptions(): Observable<InventoryFormOptionsResponse> {
+    return this.http.get<InventoryFormOptionsResponse>(
+      `${BASE_API_URL}/inventory/form-options-${STUDENT_ID}`,
       httpOptions
     );
   }

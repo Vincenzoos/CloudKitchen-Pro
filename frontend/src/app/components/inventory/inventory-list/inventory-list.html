@@ -1,0 +1,115 @@
+<div class="container my-5">
+    <!-- Toast Notification Component -->
+    <app-toast-notification [message]="toastMessage" toastId="inventoryToast"></app-toast-notification>
+
+    <!-- Hero Section -->
+    <div class="text-center mb-4">
+        <span style="font-size:2.5rem;">🗃️</span>
+        <h1 class="fw-bold mt-2 mb-1">Inventory Management</h1>
+        <p class="lead text-muted mb-3">Track and manage your kitchen ingredients</p>
+        <span class="badge rounded-pill bg-secondary fs-6 mb-2">
+            {{ inventory.length }} item{{ inventory.length === 1 ? '' : 's' }}
+        </span>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Inventory Table Card -->
+    <div *ngIf="!loading" class="card shadow-sm mx-auto" style="max-width:1400px;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-nowrap">ID</th>
+                        <th class="text-nowrap">Ingredient</th>
+                        <th class="text-nowrap">Category</th>
+                        <th class="text-nowrap">Quantity</th>
+                        <th class="text-nowrap">Unit</th>
+                        <th class="text-nowrap">Purchase Date</th>
+                        <th class="text-nowrap">Expiration Date</th>
+                        <th class="text-nowrap">Location</th>
+                        <th class="text-nowrap">Cost (AUD)</th>
+                        <th class="text-nowrap">Created</th>
+                        <th class="text-nowrap">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of inventory; track item._id) {
+                    <tr>
+                        <td class="text-danger fw-semibold text-nowrap">{{ padInventoryId(item.inventoryId) }}</td>
+                        <td class="fw-bold text-nowrap">{{ item.ingredientName }}</td>
+                        <td class="text-nowrap">
+                            <span class="badge bg-info">{{ item.category }}</span>
+                        </td>
+                        <td class="text-nowrap">{{ item.quantity }}</td>
+                        <td class="text-nowrap">{{ item.unit }}</td>
+                        <td class="text-nowrap">{{ formatDate(item.purchaseDate) }}</td>
+                        <td class="text-nowrap" [class.table-danger]="isExpired(item.expirationDate)"
+                            [class.table-warning]="isExpiringsoon(item.expirationDate) && !isExpired(item.expirationDate)">
+                            @if (isExpired(item.expirationDate)) {
+                            <span class="badge bg-danger">{{ formatDate(item.expirationDate) }} ⚠️ EXPIRED</span>
+                            } @else if (isExpiringsoon(item.expirationDate)) {
+                            <span class="badge bg-warning text-dark">{{ formatDate(item.expirationDate) }} ⏰ Soon</span>
+                            } @else {
+                            {{ formatDate(item.expirationDate) }}
+                            }
+                        </td>
+                        <td class="text-nowrap">{{ item.location }}</td>
+                        <td class="text-nowrap">${{ item.cost.toFixed(2) }}</td>
+                        <td class="text-nowrap">{{ formatDate(item.createdDate || '') }}</td>
+                        <td class="text-nowrap">
+                            <button (click)="editInventory(item._id!)" class="btn btn-sm btn-outline-secondary me-1"
+                                title="Edit">
+                                ✏️
+                            </button>
+                            <button (click)="confirmDelete(item)" class="btn btn-sm btn-outline-danger" title="Delete">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">No inventory items found.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-center gap-2 mb-4 mt-4">
+        <button (click)="addInventory()" class="btn btn-success btn-lg">
+            ➕ Add New Item
+        </button>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal Template -->
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirm Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <p class="mb-0">Are you sure you want to delete this inventory item?</p>
+        <p class="fw-bold mt-2 mb-0">{{ itemToDelete?.ingredientName }}</p>
+        <p class="text-muted small">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete(modal)">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteInventory(modal)">Delete</button>
+    </div>
+</ng-template>

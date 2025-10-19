@@ -135,8 +135,10 @@ app.use('/api/recipe', apiRecipeRoute);
 // ============================================
 // INVENTORY ROUTE
 // ============================================
-const inventoryRoute = require('./routes/inventory');
-app.use('/inventory', inventoryRoute);
+// const inventoryRoute = require('./routes/inventory');
+// app.use('/api/inventory', inventoryRoute);
+const apiInventoryRoute = require('./routes/inventory');
+app.use('/api/inventory', apiInventoryRoute);
 
 
 // ============================================

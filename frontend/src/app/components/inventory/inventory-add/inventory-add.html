@@ -1,0 +1,113 @@
+<!-- Header -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow" style="border-radius:1.5rem;">
+                <div class="card-header bg-success text-white" style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <h2 class="mt-2">Add New Inventory Item</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Display errors if any -->
+                    <div *ngIf="errors.length > 0" class="alert alert-danger">
+                        <ul class="mb-0">
+                            <li *ngFor="let error of errors">{{ error }}</li>
+                        </ul>
+                    </div>
+
+                    <!-- Display general error -->
+                    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+                    <form class="row g-4" (ngSubmit)="onSubmit()">
+                        <!-- Basic Information -->
+                        <div class="col-12">
+                            <h5 class="mb-0">Basic Information</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="ingredientName">Ingredient Name *</label>
+                            <input class="form-control" type="text" id="ingredientName"
+                                [(ngModel)]="formData.ingredientName" name="ingredientName"
+                                placeholder="e.g., All-purpose flour" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="category">Food Category *</label>
+                            <select class="form-select" id="category" [(ngModel)]="formData.category" name="category"
+                                required>
+                                <option value="" disabled>Select a category...</option>
+                                <option *ngFor="let category of allowedCategories" [value]="category">
+                                    {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Quantity & Measurement -->
+                        <div class="col-12">
+                            <h5 class="mb-0 mt-2">Quantity & Measurement</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="quantity">Quantity *</label>
+                            <input class="form-control" type="number" id="quantity" [(ngModel)]="formData.quantity"
+                                name="quantity" min="0.1" step="0.01" max="9999" placeholder="Enter quantity" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="unitMeasurement">Unit of Measurement *</label>
+                            <select class="form-select" id="unitMeasurement" [(ngModel)]="formData.unitMeasurement"
+                                name="unitMeasurement" required>
+                                <option value="" disabled>Select unit...</option>
+                                <option *ngFor="let unit of allowedUnits" [value]="unit">
+                                    {{ unit.charAt(0).toUpperCase() + unit.slice(1) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="col-12">
+                            <h5 class="mb-0 mt-2">Dates</h5>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="purchaseDate">Date of Purchase *</label>
+                            <input class="form-control" type="date" id="purchaseDate"
+                                [(ngModel)]="formData.purchaseDate" name="purchaseDate" [max]="getTodayDate()" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="expirationDate">Date of Expiration *</label>
+                            <input class="form-control" type="date" id="expirationDate"
+                                [(ngModel)]="formData.expirationDate" name="expirationDate" required>
+                        </div>
+
+                        <!-- Storage & Cost -->
+                        <div class="col-12">
+                            <h5 class="mt-2 mb-0">Storage & Cost</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="location">Storage Location *</label>
+                            <select class="form-select" id="location" [(ngModel)]="formData.location" name="location"
+                                required>
+                                <option value="" disabled>Select location...</option>
+                                <option *ngFor="let location of allowedLocations" [value]="location">
+                                    {{ location.charAt(0).toUpperCase() + location.slice(1) }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="purchaseCost">Purchase Cost (AUD) *</label>
+                            <input class="form-control" type="number" id="purchaseCost"
+                                [(ngModel)]="formData.purchaseCost" name="purchaseCost" min="0.1" step="0.01"
+                                max="999.99" placeholder="Enter purchase cost" required>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 d-flex justify-content-center mt-4 gap-2">
+                            <button class="btn btn-success px-5" type="submit" [disabled]="loading">
+                                {{ loading ? 'Adding...' : 'Add Inventory' }}
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
