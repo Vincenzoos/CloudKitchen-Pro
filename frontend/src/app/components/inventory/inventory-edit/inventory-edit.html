@@ -20,17 +20,13 @@
                     @if (!loadingItem) {
                     @if (errors.length > 0) {
                     <div class="alert alert-danger">
+                        <div>{{error}}</div>
                         <ul class="mb-0">
                             @for (err of errors; track err) {
                             <li>{{ err }}</li>
                             }
                         </ul>
                     </div>
-                    }
-
-                    <!-- Display general error -->
-                    @if (error) {
-                    <div class="alert alert-danger">{{ error }}</div>
                     }
 
                     <form class="row g-4" (ngSubmit)="onSubmit()">
@@ -41,20 +37,41 @@
                         <div class="col-md-6">
                             <label class="form-label" for="ingredientName">Ingredient Name *</label>
                             <input class="form-control" type="text" id="ingredientName"
-                                [(ngModel)]="formData.ingredientName" name="ingredientName"
-                                placeholder="e.g., All-purpose flour" required>
+                                [(ngModel)]="formData.ingredientName" name="ingredientName" #ingredientName="ngModel"
+                                required minlength="2" maxlength="50" placeholder="e.g., All-purpose flour"
+                                [class.is-invalid]="ingredientName.invalid && ingredientName.touched">
+                            @if (ingredientName.invalid && ingredientName.touched) {
+                            <div class="invalid-feedback">
+                                @if (ingredientName.errors?.['required']) {
+                                <div>Ingredient name is required</div>
+                                }
+                                @if (ingredientName.errors?.['minlength']) {
+                                <div>Ingredient name must be at least 2 characters</div>
+                                }
+                                @if (ingredientName.errors?.['maxlength']) {
+                                <div>Ingredient name cannot exceed 50 characters</div>
+                                }
+                            </div>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="category">Food Category *</label>
                             <select class="form-select" id="category" [(ngModel)]="formData.category" name="category"
-                                required>
+                                #category="ngModel" required [class.is-invalid]="category.invalid && category.touched">
                                 <option value="" disabled>Select a category...</option>
-                                @for (category of allowedCategories; track category) {
-                                <option [value]="category">
-                                    {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+                                @for (cat of allowedCategories; track cat) {
+                                <option [value]="cat">
+                                    {{ cat.charAt(0).toUpperCase() + cat.slice(1) }}
                                 </option>
                                 }
                             </select>
+                            @if (category.invalid && category.touched) {
+                            <div class="invalid-feedback">
+                                @if (category.errors?.['required']) {
+                                <div>Category is required</div>
+                                }
+                            </div>
+                            }
                         </div>
 
                         <!-- Quantity & Measurement -->
@@ -64,12 +81,27 @@
                         <div class="col-md-6">
                             <label class="form-label" for="quantity">Quantity *</label>
                             <input class="form-control" type="number" id="quantity" [(ngModel)]="formData.quantity"
-                                name="quantity" min="0.1" step="0.01" max="9999" placeholder="Enter quantity" required>
+                                name="quantity" #quantity="ngModel" required min="0.1" step="0.01" max="9999"
+                                placeholder="Enter quantity" [class.is-invalid]="quantity.invalid && quantity.touched">
+                            @if (quantity.invalid && quantity.touched) {
+                            <div class="invalid-feedback">
+                                @if (quantity.errors?.['required']) {
+                                <div>Quantity is required</div>
+                                }
+                                @if (quantity.errors?.['min']) {
+                                <div>Quantity must be at least 0.1</div>
+                                }
+                                @if (quantity.errors?.['max']) {
+                                <div>Quantity cannot exceed 9999</div>
+                                }
+                            </div>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="unitMeasurement">Unit of Measurement *</label>
                             <select class="form-select" id="unitMeasurement" [(ngModel)]="formData.unitMeasurement"
-                                name="unitMeasurement" required>
+                                name="unitMeasurement" #unitMeasurement="ngModel" required
+                                [class.is-invalid]="unitMeasurement.invalid && unitMeasurement.touched">
                                 <option value="" disabled>Select unit...</option>
                                 @for (unit of allowedUnits; track unit) {
                                 <option [value]="unit">
@@ -77,6 +109,13 @@
                                 </option>
                                 }
                             </select>
+                            @if (unitMeasurement.invalid && unitMeasurement.touched) {
+                            <div class="invalid-feedback">
+                                @if (unitMeasurement.errors?.['required']) {
+                                <div>Unit of measurement is required</div>
+                                }
+                            </div>
+                            }
                         </div>
 
                         <!-- Dates -->
@@ -87,12 +126,29 @@
                         <div class="col-md-6">
                             <label class="form-label" for="purchaseDate">Date of Purchase *</label>
                             <input class="form-control" type="date" id="purchaseDate"
-                                [(ngModel)]="formData.purchaseDate" name="purchaseDate" [max]="getTodayDate()" required>
+                                [(ngModel)]="formData.purchaseDate" name="purchaseDate" #purchaseDate="ngModel"
+                                [max]="getTodayDate()" required
+                                [class.is-invalid]="purchaseDate.invalid && purchaseDate.touched">
+                            @if (purchaseDate.invalid && purchaseDate.touched) {
+                            <div class="invalid-feedback">
+                                @if (purchaseDate.errors?.['required']) {
+                                <div>Purchase date is required</div>
+                                }
+                            </div>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="expirationDate">Date of Expiration *</label>
                             <input class="form-control" type="date" id="expirationDate"
-                                [(ngModel)]="formData.expirationDate" name="expirationDate" required>
+                                [(ngModel)]="formData.expirationDate" name="expirationDate" #expirationDate="ngModel"
+                                required [class.is-invalid]="expirationDate.invalid && expirationDate.touched">
+                            @if (expirationDate.invalid && expirationDate.touched) {
+                            <div class="invalid-feedback">
+                                @if (expirationDate.errors?.['required']) {
+                                <div>Expiration date is required</div>
+                                }
+                            </div>
+                            }
                         </div>
 
                         <!-- Storage & Cost -->
@@ -102,7 +158,7 @@
                         <div class="col-md-6">
                             <label class="form-label" for="location">Storage Location *</label>
                             <select class="form-select" id="location" [(ngModel)]="formData.location" name="location"
-                                required>
+                                #location="ngModel" required [class.is-invalid]="location.invalid && location.touched">
                                 <option value="" disabled>Select location...</option>
                                 @for (location of allowedLocations; track location) {
                                 <option [value]="location">
@@ -110,12 +166,33 @@
                                 </option>
                                 }
                             </select>
+                            @if (location.invalid && location.touched) {
+                            <div class="invalid-feedback">
+                                @if (location.errors?.['required']) {
+                                <div>Storage location is required</div>
+                                }
+                            </div>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="purchaseCost">Purchase Cost (AUD) *</label>
                             <input class="form-control" type="number" id="purchaseCost"
-                                [(ngModel)]="formData.purchaseCost" name="purchaseCost" min="0.1" step="0.01"
-                                max="999.99" placeholder="Enter purchase cost" required>
+                                [(ngModel)]="formData.purchaseCost" name="purchaseCost" #purchaseCost="ngModel" required
+                                min="0.1" step="0.01" max="999.99" placeholder="Enter purchase cost"
+                                [class.is-invalid]="purchaseCost.invalid && purchaseCost.touched">
+                            @if (purchaseCost.invalid && purchaseCost.touched) {
+                            <div class="invalid-feedback">
+                                @if (purchaseCost.errors?.['required']) {
+                                <div>Purchase cost is required</div>
+                                }
+                                @if (purchaseCost.errors?.['min']) {
+                                <div>Purchase cost must be at least 0.1</div>
+                                }
+                                @if (purchaseCost.errors?.['max']) {
+                                <div>Purchase cost cannot exceed 999.99</div>
+                                }
+                            </div>
+                            }
                         </div>
 
                         <!-- Buttons -->
