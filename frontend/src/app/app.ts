@@ -32,11 +32,24 @@ export class App implements OnInit {
       next: (response: any) => {
         if (response.success && response.user) {
           this.user = response.user;
+        } else {
+          // User verification failed, redirect to login
+          console.warn('User verification failed, redirecting to login');
+          this.userId = '';
+          this.user = null;
+          this.router.navigate(['/user/login-33810672'], {
+            queryParams: { message: 'Session expired or invalid. Please log in again.' }
+          });
         }
       },
       error: (err: any) => {
         console.error('Error loading user info:', err);
+        // Redirect to login on error (e.g., user not found, not logged in, server error)
+        this.userId = '';
         this.user = null;
+        this.router.navigate(['/user/login-33810672'], {
+          queryParams: { message: 'Session expired or invalid. Please log in again.' }
+        });
       }
     });
   }
