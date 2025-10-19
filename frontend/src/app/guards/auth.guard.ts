@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
 
         try {
             // Verify with backend that user is actually logged in
-            const response = await firstValueFrom(this.database.verifyUserLogin(userId));
+            const response = await firstValueFrom(this.database.getCurrentUser(userId));
 
             if (response.success && response.user) {
                 // User is logged in on backend, allow access

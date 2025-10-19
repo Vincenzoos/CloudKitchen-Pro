@@ -77,8 +77,8 @@ export class Database {
     return this.http.get(`${BASE_API_URL}/user/logout-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`);
   }
 
-  // Verify user is logged in with backend
-  verifyUserLogin(userId: string): Observable<any> {
+  // Get current user info - verifies user is logged in with backend
+  getCurrentUser(userId: string): Observable<any> {
     return this.http.get(`${BASE_API_URL}/user/me-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`, httpOptions);
   }
 

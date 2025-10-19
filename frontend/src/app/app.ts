@@ -11,13 +11,33 @@ import { Database } from './services/database';
 export class App implements OnInit {
   protected readonly title = signal('A3 CloudKitchen Pro');
   userId: string = '';
+  user: any = null;
 
   constructor(private router: Router, private route: ActivatedRoute, private database: Database) { }
 
   ngOnInit() {
-    // Listen for query parameter changes to capture userId
+    // Listen for query parameter changes to capture userId and load user info
     this.route.queryParams.subscribe(params => {
       this.userId = params['userId'] || '';
+      if (this.userId) {
+        this.loadUserInfo();
+      } else {
+        this.user = null;
+      }
+    });
+  }
+
+  private loadUserInfo() {
+    this.database.getCurrentUser(this.userId).subscribe({
+      next: (response: any) => {
+        if (response.success && response.user) {
+          this.user = response.user;
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading user info:', err);
+        this.user = null;
+      }
     });
   }
 

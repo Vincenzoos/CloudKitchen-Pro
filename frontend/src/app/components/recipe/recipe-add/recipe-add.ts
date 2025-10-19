@@ -49,10 +49,28 @@ export class RecipeAdd implements OnInit {
         // Get userId from route query parameters
         this.route.queryParams.subscribe(params => {
             this.userId = params['userId'];
+            if (this.userId) {
+                this.loadCurrentUser();
+            }
         });
 
         // Load form options
         this.loadFormOptions();
+    }
+
+    private loadCurrentUser(): void {
+        this.database.getCurrentUser(this.userId).subscribe({
+            next: (response: any) => {
+                if (response.success && response.user) {
+                    this.currentUser = response.user;
+                    this.formData.chef = this.currentUser.fullname;
+                    console.log('Current user loaded:', this.currentUser);
+                }
+            },
+            error: (err: any) => {
+                console.error('Error loading current user:', err);
+            }
+        });
     }
 
     loadFormOptions(): void {
@@ -92,7 +110,7 @@ export class RecipeAdd implements OnInit {
         // Prepare recipe data with kebab-case keys for backend compatibility
         const recipe: any = {
             title: this.formData.title,
-            chef: this.formData.chef,
+            chef: this.currentUser ? this.currentUser.fullname : this.formData.chef,
             'prep-time': parseInt(this.formData.prepTime),
             'meal-type': this.formData.mealType,
             'cuisine-type': this.formData.cuisineType,
