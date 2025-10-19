@@ -39,7 +39,7 @@ app.use(express.json());
 
 // Enable CORS for all routes - adjust settings as needed
 app.use(cors({
-    origin: 'http://localhost:4200',  // Allow Angular dev server
+    origin: process.env.FRONTEND_URL || 'http://localhost:4200',  // Allow Angular dev server or production frontend
     credentials: true  // If using cookies/auth
 }));
 
@@ -137,7 +137,7 @@ async function startServer() {
     // Initialize Socket.io for real-time communication (for text-to-speech)
     const io = socketIo(server, {
         cors: {
-            origin: 'http://localhost:4200',  // Allow Angular dev server
+            origin: process.env.FRONTEND_URL || 'http://localhost:4200',  // Allow Angular dev server or production frontend
             methods: ['GET', 'POST'],
             credentials: true
         }
