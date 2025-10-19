@@ -1,0 +1,90 @@
+<nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+        @if (user) {
+        <a class="navbar-brand" [routerLink]="['/']" [queryParams]="{ userId }">
+            <img src="https://img.icons8.com/ios-filled/40/000000/sushi.png" alt="Logo" class="me-2"
+                style="height:36px;">
+            CloudKitchen Pro
+        </a>
+        } @else {
+        <a class="navbar-brand" [routerLink]="['/user/login-33810672']">
+            <img src="https://img.icons8.com/ios-filled/40/000000/sushi.png" alt="Logo" class="me-2"
+                style="height:36px;">
+            CloudKitchen Pro
+        </a>
+        }
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                @if (user) {
+                @if (user.role === 'chef') {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="recipesDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Recipes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" [routerLink]="['/recipe/recipes-33810672']"
+                                [queryParams]="{ userId }">My
+                                Recipes</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/recipe/add-33810672']"
+                                [queryParams]="{ userId }">Add
+                                Recipe</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/recipe/availability-33810672']"
+                                [queryParams]="{ userId }">Recipe
+                                Availability</a></li>
+                    </ul>
+                </li>
+                }
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Inventory
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" [routerLink]="['/inventory/inventories-33810672']"
+                                [queryParams]="{ userId }">List
+                                Inventory</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/inventory/add-33810672']"
+                                [queryParams]="{ userId }">Add
+                                Inventory</a></li>
+                        <li><a class="dropdown-item" [routerLink]="['/inventory/alerts-33810672']"
+                                [queryParams]="{ userId }">Inventory
+                                Alerts</a>
+                        </li>
+                        <li><a class="dropdown-item" [routerLink]="['/inventory/insights-33810672']"
+                                [queryParams]="{ userId }">Inventory
+                                Insights</a></li>
+                    </ul>
+                </li>
+                @if (user.role === 'admin') {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Reports
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" [routerLink]="['/report/analytics-33810672']"
+                                [queryParams]="{ userId }">View
+                                Reports</a>
+                        </li>
+                    </ul>
+                </li>
+                }
+                }
+            </ul>
+            <div class="d-flex align-items-center">
+                @if (user) {
+                <span class="navbar-text me-3 d-none d-lg-block" style="font-weight:500;">Welcome,
+                    {{user.fullname}}</span>
+                <button (click)="logoutEvent.emit()" class="btn btn-outline-danger btn-md">Logout</button>
+                } @else {
+                <a [routerLink]="['/user/login-33810672']" class="btn btn-dark btn-md">Get Started</a>
+                }
+            </div>
+        </div>
+    </div>
+</nav>

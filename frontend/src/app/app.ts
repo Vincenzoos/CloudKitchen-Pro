@@ -1,10 +1,12 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, ActivatedRoute } from '@angular/router';
 import { Database } from './services/database';
+import { HeaderComponent } from './components/shared/header/header';
+import { FooterComponent } from './components/shared/footer/footer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, HeaderComponent, FooterComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
