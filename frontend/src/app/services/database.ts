@@ -116,6 +116,20 @@ export interface TranslationResponse {
   error?: string;
 }
 
+export interface CompleteTranslationResponse {
+  success: boolean;
+  data?: {
+    title: string;
+    chef: string;
+    mealType: string;
+    cuisineType: string;
+    difficulty: string;
+    ingredients: string[];
+    instructions: string[];
+  };
+  error?: string;
+}
+
 export interface TextToSpeechResponse {
   success: boolean;
   data?: {
@@ -244,11 +258,11 @@ export class Database {
   // HD TASK 2 - GOOGLE TRANSLATION API
   // ============================================
 
-  // Translate recipe ingredients and instructions
-  translateRecipe(ingredients: string[], instructions: string[], targetLanguage: string, userId: string): Observable<TranslationResponse> {
-    return this.http.post<TranslationResponse>(
+  // Translate complete recipe with all attributes
+  translateRecipe(recipe: Recipe, targetLanguage: string, userId: string): Observable<CompleteTranslationResponse> {
+    return this.http.post<CompleteTranslationResponse>(
       `${BASE_API_URL}/recipe/translate-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
-      { ingredients, instructions, targetLanguage },
+      { recipe, targetLanguage },
       httpOptions
     );
   }

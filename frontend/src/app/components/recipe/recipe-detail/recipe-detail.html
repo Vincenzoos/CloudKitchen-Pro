@@ -26,7 +26,13 @@
             <div class="card shadow mb-4" style="border-radius:1.5rem;">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
                     style="border-radius: 1.5rem 1.5rem 0 0;">
-                    <h2 class="mt-2 mb-2">👁️ {{ recipe.title }}</h2>
+                    <h2 class="mt-2 mb-2">
+                        @if (showTranslation && translatedRecipe) {
+                        {{ translatedRecipe.title }}
+                        } @else {
+                        {{ recipe.title }}
+                        }
+                    </h2>
                     <div>
                         @if (recipe.userId === userId) {
                         <button class="btn btn-light btn-sm me-2" (click)="editRecipe()">
@@ -39,10 +45,16 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
-                    <!-- Recipe Metadata -->
+                    <!-- Recipe Metadata - Original and Translated -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="text-muted mb-3">Recipe Information</h5>
+                            <h5 class="text-muted mb-3">
+                                @if (showTranslation && translatedRecipe) {
+                                Recipe Information (Original)
+                                } @else {
+                                Recipe Information
+                                }
+                            </h5>
                             <table class="table table-borderless">
                                 <tr>
                                     <td class="fw-bold">Recipe ID:</td>
@@ -62,8 +74,40 @@
                                 </tr>
                             </table>
                         </div>
+                        @if (showTranslation && translatedRecipe) {
                         <div class="col-md-6">
-                            <h5 class="text-muted mb-3">Cooking Details</h5>
+                            <h5 class="text-success mb-3">Recipe Information (Translated)</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-bold">Recipe ID:</td>
+                                    <td class="text-danger">{{ recipe.recipeId }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Chef:</td>
+                                    <td>{{ translatedRecipe.chef }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Meal Type:</td>
+                                    <td><span class="badge text-bg-success">{{ translatedRecipe.mealType }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Cuisine:</td>
+                                    <td>{{ translatedRecipe.cuisineType }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">
+                                @if (showTranslation && translatedRecipe) {
+                                Cooking Details (Original)
+                                } @else {
+                                Cooking Details
+                                }
+                            </h5>
                             <table class="table table-borderless">
                                 <tr>
                                     <td class="fw-bold">Difficulty:</td>
@@ -87,6 +131,33 @@
                                 </tr>
                             </table>
                         </div>
+                        @if (showTranslation && translatedRecipe) {
+                        <div class="col-md-6">
+                            <h5 class="text-success mb-3">Cooking Details (Translated)</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td class="fw-bold">Difficulty:</td>
+                                    <td>
+                                        <span class="badge text-bg-success">
+                                            {{ translatedRecipe.difficulty }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Prep Time:</td>
+                                    <td>{{ recipe.prepTime }} minutes</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Servings:</td>
+                                    <td>{{ recipe.servings }} people</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Created:</td>
+                                    <td>{{ recipe.createdDate | date:'shortDate' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        }
                     </div>
 
                     <hr>

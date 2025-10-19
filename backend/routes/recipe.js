@@ -623,23 +623,66 @@ router.post(`/import-suggested-${STUDENT_ID}`, async (req, res) => {
 // RECIPE TRANSLATION ROUTE (HD TASK 2)
 // ============================================
 
-// POST - Translate recipe ingredients and instructions (JSON API)
+// POST - Translate complete recipe with all attributes (JSON API)
+// Accepts: { recipe, targetLanguage }
 router.post(`/translate-${STUDENT_ID}`, async (req, res) => {
     try {
-        const { ingredients, instructions, targetLanguage } = req.body;
+        const { recipe, targetLanguage } = req.body;
 
         // Validate input
-        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+        if (!recipe || typeof recipe !== 'object') {
+            return res.status(400).json({
+                success: false,
+                error: 'Recipe object is required'
+            });
+        }
+
+        if (!recipe.title || typeof recipe.title !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Recipe title is required'
+            });
+        }
+
+        if (!recipe.chef || typeof recipe.chef !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Chef name is required'
+            });
+        }
+
+        if (!recipe.ingredients || !Array.isArray(recipe.ingredients) || recipe.ingredients.length === 0) {
             return res.status(400).json({
                 success: false,
                 error: 'Ingredients array is required and must not be empty'
             });
         }
 
-        if (!instructions || !Array.isArray(instructions) || instructions.length === 0) {
+        if (!recipe.instructions || !Array.isArray(recipe.instructions) || recipe.instructions.length === 0) {
             return res.status(400).json({
                 success: false,
                 error: 'Instructions array is required and must not be empty'
+            });
+        }
+
+        if (!recipe.mealType || typeof recipe.mealType !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Meal type is required'
+            });
+        }
+
+        if (!recipe.cuisineType || typeof recipe.cuisineType !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Cuisine type is required'
+            });
+        }
+
+        if (!recipe.difficulty || typeof recipe.difficulty !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Difficulty is required'
             });
         }
 
@@ -650,7 +693,7 @@ router.post(`/translate-${STUDENT_ID}`, async (req, res) => {
             });
         }
 
-        // Validate target language (support common languages)
+        // Validate target language
         const supportedLanguages = ['es', 'fr', 'it', 'de', 'pt', 'zh', 'ja', 'ko'];
         if (!supportedLanguages.includes(targetLanguage.toLowerCase())) {
             return res.status(400).json({
@@ -662,10 +705,9 @@ router.post(`/translate-${STUDENT_ID}`, async (req, res) => {
         // Import translation service
         const translationService = require('../utils/translationService');
 
-        // Translate the recipe
-        const translationResult = await translationService.translateRecipe(
-            ingredients,
-            instructions,
+        // Translate the complete recipe
+        const translationResult = await translationService.translateCompleteRecipe(
+            recipe,
             targetLanguage.toLowerCase()
         );
 

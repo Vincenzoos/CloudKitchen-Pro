@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Database, Recipe, RecipeResponse, HealthAnalysisResponse, TranslationResponse } from '../../../services/database';
+import { Database, Recipe, RecipeResponse, HealthAnalysisResponse, TranslationResponse, CompleteTranslationResponse } from '../../../services/database';
 import { LanguageSelector } from '../../shared/language-selector/language-selector';
 import { TextToSpeech } from '../text-to-speech/text-to-speech';
 
@@ -29,6 +29,7 @@ export class RecipeDetail implements OnInit {
 
     // Translation properties
     selectedLanguage: string = '';
+    translatedRecipe: any = null;
     translatedIngredients: string[] = [];
     translatedInstructions: string[] = [];
     translating: boolean = false;
@@ -162,6 +163,7 @@ export class RecipeDetail implements OnInit {
         if (!languageCode) {
             // Clear translation
             this.showTranslation = false;
+            this.translatedRecipe = null;
             this.translatedIngredients = [];
             this.translatedInstructions = [];
             this.translationError = '';
@@ -173,26 +175,25 @@ export class RecipeDetail implements OnInit {
             return;
         }
 
-        this.translateRecipe(languageCode);
+        this.translateCompleteRecipe(languageCode);
     }
 
-    // Translate recipe to selected language
-    translateRecipe(targetLanguage: string): void {
+    // Translate complete recipe with all attributes
+    translateCompleteRecipe(targetLanguage: string): void {
         this.translating = true;
         this.translationError = '';
-        this.translatedIngredients = [];
-        this.translatedInstructions = [];
+        this.translatedRecipe = null;
 
         this.database.translateRecipe(
-            this.recipe!.ingredients,
-            this.recipe!.instructions,
+            this.recipe!,
             targetLanguage,
             this.userId
         ).subscribe({
-            next: (response: TranslationResponse) => {
+            next: (response: CompleteTranslationResponse) => {
                 if (response.success && response.data) {
-                    this.translatedIngredients = response.data.translatedIngredients;
-                    this.translatedInstructions = response.data.translatedInstructions;
+                    this.translatedRecipe = response.data;
+                    this.translatedIngredients = response.data.ingredients;
+                    this.translatedInstructions = response.data.instructions;
                     this.showTranslation = true;
                 } else {
                     this.translationError = response.error || 'Failed to translate recipe';

@@ -48,52 +48,74 @@ async function translateTexts(texts, targetLanguage) {
 }
 
 /**
- * Translates recipe ingredients and instructions
+ * Translates complete recipe with all attributes
+ * Translates title, chef name, ingredients, instructions, meal type, cuisine type, and difficulty
  * Preserves quantities and measurements in ingredients
- * @param {string[]} ingredients - Array of ingredient strings
- * @param {string[]} instructions - Array of instruction strings
+ * @param {object} recipe - Recipe object with all attributes
  * @param {string} targetLanguage - Target language code
- * @returns {Promise<{translatedIngredients: string[], translatedInstructions: string[]}>}
+ * @returns {Promise<object>} - Translated recipe object
  */
-async function translateRecipe(ingredients, instructions, targetLanguage) {
+async function translateCompleteRecipe(recipe, targetLanguage) {
     try {
-        // For ingredients, we need to be careful to preserve quantities
-        // Split ingredients into quantity/unit parts and ingredient names
-        const processedIngredients = ingredients.map(ingredient => {
-            // Match patterns like "1 cup flour", "2 large eggs", "salt", "100g beef"
-            const match = ingredient.match(/^([\d\s\w\/.-]+)?\s*(.+)$/);
-            if (match) {
-                const quantityPart = match[1] || '';
-                const ingredientPart = match[2] || ingredient;
-
-                // Only translate the ingredient name part, keep quantity as is
+        // Process ingredients to extract quantities and ingredient names separately
+        const processedIngredients = recipe.ingredients.map(ingredient => {
+            // Match pattern: optional quantity (numbers, spaces, units like g, kg, ml, etc) followed by ingredient name
+            const match = ingredient.match(/^([\d\s\w\/.,\-]*?)\s+(.+)$/);
+            if (match && match[1].trim()) {
                 return {
-                    quantity: quantityPart.trim(),
-                    ingredient: ingredientPart.trim()
+                    quantity: match[1].trim(),
+                    ingredient: match[2].trim()
                 };
             }
+            // If no quantity found, treat entire string as ingredient
             return {
                 quantity: '',
-                ingredient: ingredient
+                ingredient: ingredient.trim()
             };
         });
 
-        // Translate ingredient names only
-        const ingredientNames = processedIngredients.map(item => item.ingredient);
-        const translatedIngredientNames = await translateTexts(ingredientNames, targetLanguage);
+        // Collect all text fields to translate (only ingredient names, not quantities)
+        const textsToTranslate = [
+            recipe.title,
+            recipe.chef,
+            recipe.mealType,
+            recipe.cuisineType,
+            recipe.difficulty,
+            ...processedIngredients.map(ing => ing.ingredient), // Only ingredient names
+            ...recipe.instructions
+        ];
 
-        // Reconstruct ingredients with original quantities
-        const translatedIngredients = processedIngredients.map((item, index) => {
-            const translatedName = translatedIngredientNames[index];
+        // Translate all texts in one batch
+        const translatedTexts = await translateTexts(textsToTranslate, targetLanguage);
+
+        // Map back translated texts to recipe attributes
+        let index = 0;
+        const translatedTitle = translatedTexts[index++];
+        const translatedChef = translatedTexts[index++];
+        const translatedMealType = translatedTexts[index++];
+        const translatedCuisineType = translatedTexts[index++];
+        const translatedDifficulty = translatedTexts[index++];
+
+        // Get translated ingredients (preserve quantities)
+        const ingredientCount = recipe.ingredients.length;
+        const translatedIngredientNames = translatedTexts.slice(index, index + ingredientCount);
+        const translatedIngredients = processedIngredients.map((item, i) => {
+            const translatedName = translatedIngredientNames[i];
+            // If there's a quantity, prepend it to the translated ingredient name
             return item.quantity ? `${item.quantity} ${translatedName}` : translatedName;
         });
 
-        // Translate instructions
-        const translatedInstructions = await translateTexts(instructions, targetLanguage);
+        // Get translated instructions
+        const translatedInstructions = translatedTexts.slice(index + ingredientCount);
 
         return {
-            translatedIngredients,
-            translatedInstructions
+            title: translatedTitle,
+            chef: translatedChef,
+            mealType: translatedMealType,
+            cuisineType: translatedCuisineType,
+            difficulty: translatedDifficulty,
+            ingredients: translatedIngredients,
+            instructions: translatedInstructions
         };
     } catch (error) {
         console.error('Recipe translation error:', error);
@@ -104,5 +126,5 @@ async function translateRecipe(ingredients, instructions, targetLanguage) {
 module.exports = {
     translateText,
     translateTexts,
-    translateRecipe
+    translateCompleteRecipe
 };

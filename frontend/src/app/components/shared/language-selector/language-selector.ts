@@ -19,9 +19,14 @@ export class LanguageSelector {
 
     // Available languages for translation
     languages: Language[] = [
-        { code: 'es', name: 'Spanish', flag: '🇪🇸' },
-        { code: 'fr', name: 'French', flag: '🇫🇷' },
-        { code: 'it', name: 'Italian', flag: '🇮🇹' }
+        { code: 'es', name: 'Spanish', flag: 'ES' },
+        { code: 'fr', name: 'French', flag: 'FR' },
+        { code: 'it', name: 'Italian', flag: 'IT' },
+        { code: 'de', name: 'German', flag: 'DE' },
+        { code: 'pt', name: 'Portuguese', flag: 'PT' },
+        { code: 'ja', name: 'Japanese', flag: 'JP' },
+        { code: 'zh', name: 'Chinese', flag: 'ZH' },
+        { code: 'ko', name: 'Korean', flag: 'KO' }
     ];
 
     selectedLanguage: string = '';
