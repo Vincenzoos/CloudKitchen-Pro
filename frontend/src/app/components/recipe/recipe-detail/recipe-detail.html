@@ -28,9 +28,11 @@
                     style="border-radius: 1.5rem 1.5rem 0 0;">
                     <h2 class="mt-2 mb-2">👁️ {{ recipe.title }}</h2>
                     <div>
+                        @if (recipe.userId === userId) {
                         <button class="btn btn-light btn-sm me-2" (click)="editRecipe()">
                             Edit
                         </button>
+                        }
                         <button class="btn btn-outline-light btn-sm" (click)="backToList()">
                             Back
                         </button>
@@ -125,9 +127,11 @@
 
             <!-- Action Buttons -->
             <div class="d-flex justify-content-center gap-2 mb-4">
+                @if (recipe.userId === userId) {
                 <button class="btn btn-primary" (click)="editRecipe()">
                     Edit Recipe
                 </button>
+                }
                 <button class="btn btn-secondary" (click)="backToList()">
                     Back to List
                 </button>

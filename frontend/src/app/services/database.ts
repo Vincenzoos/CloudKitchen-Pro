@@ -102,7 +102,10 @@ export class Database {
   constructor(private http: HttpClient) { }
 
   // Add backend API calls here
-  // Register user - returns observable of backend response
+
+  // ============================================
+  // AUTH API CALLS
+  // ============================================
   registerUser(data: any) {
     console.log("Registering user with data:", data);
     return this.http.post(`${BASE_API_URL}/user/register-${STUDENT_ID}`, data, httpOptions);
@@ -130,13 +133,21 @@ export class Database {
   }
 
   // ============================================
-  // RECIPE METHODS
+  // RECIPE API CALLS
   // ============================================
 
   // Get all recipes for the logged-in user
   getAllRecipes(userId: string): Observable<RecipesListResponse> {
     return this.http.get<RecipesListResponse>(
       `${BASE_API_URL}/recipe/recipes-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      httpOptions
+    );
+  }
+
+  // Get a single recipe by ID for viewing (no ownership check)
+  getRecipeForView(id: string, userId: string): Observable<RecipeResponse> {
+    return this.http.get<RecipeResponse>(
+      `${BASE_API_URL}/recipe/view-${STUDENT_ID}/${id}?userId=${encodeURIComponent(userId)}`,
       httpOptions
     );
   }
@@ -184,7 +195,7 @@ export class Database {
   }
 
   // ============================================
-  // INVENTORY METHODS
+  // INVENTORY API CALLS
   // ============================================
 
   // Get all inventory items for the logged-in user

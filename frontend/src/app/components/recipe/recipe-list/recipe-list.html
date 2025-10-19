@@ -5,7 +5,7 @@
     <!-- Hero Section -->
     <div class="text-center mb-4">
         <span style="font-size:2.5rem;">👨‍🍳</span>
-        <h1 class="fw-bold mt-2 mb-1">My Recipes</h1>
+        <h1 class="fw-bold mt-2 mb-1">Recipes</h1>
         <p class="lead text-muted mb-3">Discover and manage your culinary collection</p>
         <span class="badge rounded-pill bg-secondary fs-6 mb-2">
             {{ recipes.length }} recipe{{ recipes.length === 1 ? '' : 's' }}
@@ -87,6 +87,7 @@
                                 title="View">
                                 👁️
                             </button>
+                            @if (recipe.userId === userId) {
                             <button (click)="editRecipe(recipe._id!)" class="btn btn-sm btn-outline-secondary me-1"
                                 title="Edit">
                                 ✏️
@@ -95,6 +96,7 @@
                                 title="Delete">
                                 🗑️
                             </button>
+                            }
                         </td>
                     </tr>
                     } @empty {

@@ -51,7 +51,7 @@ export class RecipeDetail implements OnInit {
             return;
         }
 
-        this.database.getRecipeById(id, this.userId).subscribe({
+        this.database.getRecipeForView(id, this.userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success && response.data) {
                     this.recipe = response.data;

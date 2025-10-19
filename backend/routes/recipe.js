@@ -31,11 +31,11 @@ router.use(requireLogin, authorizeRoles(['chef']));
 // RECIPE LISTING ROUTES (chef only)
 // ============================================
 
-// GET / - Get all recipes for the current user (JSON API)
+// GET / - Get all recipes (not just for the current user) (JSON API)
 router.get(`/recipes-${STUDENT_ID}`, async (req, res) => {
     try {
         const userId = req.user.userId;
-        const recipes = await Recipe.find({ userId: userId }).sort({ createdDate: -1 });
+        const recipes = await Recipe.find({}).sort({ createdDate: -1 });
 
         return res.status(200).json({
             success: true,
@@ -141,6 +141,34 @@ router.post(`/add-${STUDENT_ID}`, recipeValidationMiddleware, async (req, res) =
 // ============================================
 // RECIPE UPDATE ROUTES
 // ============================================
+
+// GET - Get a single recipe by ID for viewing (no ownership check) (JSON API)
+router.get(`/view-${STUDENT_ID}/:id`, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        // Ensure the recipe exists
+        const recipe = await Recipe.findById(id);
+        if (!recipe) {
+            return res.status(404).json({
+                success: false,
+                error: 'Recipe not found'
+            });
+        }
+
+        // Return recipe data
+        return res.status(200).json({
+            success: true,
+            data: recipe
+        });
+    } catch (error) {
+        console.error('Error fetching recipe:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Failed to fetch recipe'
+        });
+    }
+});
 
 // GET - Get a single recipe by ID (JSON API)
 router.get(`/edit-${STUDENT_ID}/:id`, async (req, res) => {

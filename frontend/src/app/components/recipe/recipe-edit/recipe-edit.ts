@@ -118,8 +118,14 @@ export class RecipeEdit implements OnInit {
             },
             error: (err: any) => {
                 console.error('Error fetching recipe:', err);
-                this.error = 'Failed to load recipe. Please try again.';
-                this.loadingRecipe = false;
+                if (err.status === 404) {
+                    this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
+                        queryParams: { userId: this.userId, message: 'Recipe not found or access denied' }
+                    });
+                } else {
+                    this.error = 'Failed to load recipe. Please try again.';
+                    this.loadingRecipe = false;
+                }
             }
         });
     }
