@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Database, Recipe, RecipeResponse, HealthAnalysisResponse } from '../../../services/database';
+import { Database, Recipe, RecipeResponse, HealthAnalysisResponse, TranslationResponse } from '../../../services/database';
+import { LanguageSelector } from '../../shared/language-selector/language-selector';
 
 const STUDENT_ID = "33810672";
 
 @Component({
     selector: 'app-recipe-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, LanguageSelector],
     templateUrl: './recipe-detail.html',
     styleUrls: ['./recipe-detail.css']
 })
@@ -24,6 +25,14 @@ export class RecipeDetail implements OnInit {
     analyzingHealth: boolean = false;
     healthAnalysisError: string = '';
     showHealthAnalysis: boolean = false;
+
+    // Translation properties
+    selectedLanguage: string = '';
+    translatedIngredients: string[] = [];
+    translatedInstructions: string[] = [];
+    translating: boolean = false;
+    translationError: string = '';
+    showTranslation: boolean = false;
 
     constructor(
         private database: Database,
@@ -143,5 +152,57 @@ export class RecipeDetail implements OnInit {
             default:
                 return 'text-bg-secondary';
         }
+    }
+
+    // Handle language selection for translation
+    onLanguageSelected(languageCode: string): void {
+        this.selectedLanguage = languageCode;
+
+        if (!languageCode) {
+            // Clear translation
+            this.showTranslation = false;
+            this.translatedIngredients = [];
+            this.translatedInstructions = [];
+            this.translationError = '';
+            return;
+        }
+
+        if (!this.recipe || !this.recipe.ingredients || !this.recipe.instructions) {
+            this.translationError = 'No recipe data available for translation';
+            return;
+        }
+
+        this.translateRecipe(languageCode);
+    }
+
+    // Translate recipe to selected language
+    translateRecipe(targetLanguage: string): void {
+        this.translating = true;
+        this.translationError = '';
+        this.translatedIngredients = [];
+        this.translatedInstructions = [];
+
+        this.database.translateRecipe(
+            this.recipe!.ingredients,
+            this.recipe!.instructions,
+            targetLanguage,
+            this.userId
+        ).subscribe({
+            next: (response: TranslationResponse) => {
+                if (response.success && response.data) {
+                    this.translatedIngredients = response.data.translatedIngredients;
+                    this.translatedInstructions = response.data.translatedInstructions;
+                    this.showTranslation = true;
+                } else {
+                    this.translationError = response.error || 'Failed to translate recipe';
+                }
+                this.translating = false;
+            },
+            error: (err: any) => {
+                console.error('Error translating recipe:', err);
+                this.translationError = 'Failed to translate recipe. Please try again.';
+                this.translating = false;
+            }
+        });
     }
 }

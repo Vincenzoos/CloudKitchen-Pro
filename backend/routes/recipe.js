@@ -618,3 +618,73 @@ router.post(`/import-suggested-${STUDENT_ID}`, async (req, res) => {
         res.status(500).render('errors/500', { title: 'Error' });
     }
 });
+
+// ============================================
+// RECIPE TRANSLATION ROUTE (HD TASK 2)
+// ============================================
+
+// POST - Translate recipe ingredients and instructions (JSON API)
+router.post(`/translate-${STUDENT_ID}`, async (req, res) => {
+    try {
+        const { ingredients, instructions, targetLanguage } = req.body;
+
+        // Validate input
+        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Ingredients array is required and must not be empty'
+            });
+        }
+
+        if (!instructions || !Array.isArray(instructions) || instructions.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Instructions array is required and must not be empty'
+            });
+        }
+
+        if (!targetLanguage || typeof targetLanguage !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Target language is required and must be a string'
+            });
+        }
+
+        // Validate target language (support common languages)
+        const supportedLanguages = ['es', 'fr', 'it', 'de', 'pt', 'zh', 'ja', 'ko'];
+        if (!supportedLanguages.includes(targetLanguage.toLowerCase())) {
+            return res.status(400).json({
+                success: false,
+                error: 'Unsupported target language. Supported languages: es, fr, it, de, pt, zh, ja, ko'
+            });
+        }
+
+        // Import translation service
+        const translationService = require('../utils/translationService');
+
+        // Translate the recipe
+        const translationResult = await translationService.translateRecipe(
+            ingredients,
+            instructions,
+            targetLanguage.toLowerCase()
+        );
+
+        if (translationResult) {
+            return res.status(200).json({
+                success: true,
+                data: translationResult
+            });
+        } else {
+            return res.status(500).json({
+                success: false,
+                error: 'Failed to translate recipe'
+            });
+        }
+    } catch (error) {
+        console.error('Error in recipe translation:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Failed to translate recipe'
+        });
+    }
+});

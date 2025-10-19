@@ -91,10 +91,64 @@
 
                     <hr>
 
+                    <!-- Translation Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <app-language-selector
+                                (languageSelected)="onLanguageSelected($event)"></app-language-selector>
+                        </div>
+                    </div>
+
+                    @if (translating) {
+                    <div class="text-center my-3">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Translating...</span>
+                        </div>
+                        <p class="mt-2">Translating recipe...</p>
+                    </div>
+                    }
+
+                    @if (translationError) {
+                    <div class="alert alert-danger" role="alert">
+                        {{ translationError }}
+                    </div>
+                    }
+
+                    <hr>
+
                     <!-- Ingredients Section -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <h4 class="mb-3">Ingredients</h4>
+                            @if (showTranslation && translatedIngredients.length > 0) {
+                            <div class="row">
+                                <!-- Original Ingredients -->
+                                <div class="col-md-6">
+                                    <h5 class="text-muted">Original (English)</h5>
+                                    <ul class="list-group list-group-flush">
+                                        @for (ingredient of recipe.ingredients; track ingredient; let i = $index) {
+                                        <li class="list-group-item ps-4 d-flex gap-3">
+                                            <span class="fw-bold flex-shrink-0">-</span>
+                                            <span>{{ ingredient }}</span>
+                                        </li>
+                                        }
+                                    </ul>
+                                </div>
+                                <!-- Translated Ingredients -->
+                                <div class="col-md-6">
+                                    <h5 class="text-success">Translated</h5>
+                                    <ul class="list-group list-group-flush">
+                                        @for (translatedIngredient of translatedIngredients; track translatedIngredient;
+                                        let i = $index) {
+                                        <li class="list-group-item ps-4 d-flex gap-3">
+                                            <span class="fw-bold flex-shrink-0">-</span>
+                                            <span>{{ translatedIngredient }}</span>
+                                        </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            } @else {
                             <ul class="list-group list-group-flush">
                                 @for (ingredient of recipe.ingredients; track ingredient; let i = $index) {
                                 <li class="list-group-item ps-4 d-flex gap-3">
@@ -103,6 +157,7 @@
                                 </li>
                                 }
                             </ul>
+                            }
                         </div>
                     </div>
 
@@ -112,6 +167,35 @@
                     <div class="row">
                         <div class="col-12">
                             <h4 class="mb-3">Instructions</h4>
+                            @if (showTranslation && translatedInstructions.length > 0) {
+                            <div class="row">
+                                <!-- Original Instructions -->
+                                <div class="col-md-6">
+                                    <h5 class="text-muted">Original (English)</h5>
+                                    <ol class="list-group list-group-flush">
+                                        @for (instruction of recipe.instructions; track instruction; let i = $index) {
+                                        <li class="list-group-item ps-4 mb-2 d-flex gap-3">
+                                            <span class="fw-bold fs-6 flex-shrink-0">{{ i + 1 }}</span>
+                                            <span>{{ instruction }}</span>
+                                        </li>
+                                        }
+                                    </ol>
+                                </div>
+                                <!-- Translated Instructions -->
+                                <div class="col-md-6">
+                                    <h5 class="text-success">Translated</h5>
+                                    <ol class="list-group list-group-flush">
+                                        @for (translatedInstruction of translatedInstructions; track
+                                        translatedInstruction; let i = $index) {
+                                        <li class="list-group-item ps-4 mb-2 d-flex gap-3">
+                                            <span class="fw-bold fs-6 flex-shrink-0">{{ i + 1 }}</span>
+                                            <span>{{ translatedInstruction }}</span>
+                                        </li>
+                                        }
+                                    </ol>
+                                </div>
+                            </div>
+                            } @else {
                             <ol class="list-group list-group-flush">
                                 @for (instruction of recipe.instructions; track instruction; let i = $index) {
                                 <li class="list-group-item ps-4 mb-2 d-flex gap-3">
@@ -120,6 +204,7 @@
                                 </li>
                                 }
                             </ol>
+                            }
                         </div>
                     </div>
                 </div>

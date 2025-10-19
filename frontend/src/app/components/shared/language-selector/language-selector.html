@@ -1,0 +1,21 @@
+<div class="mb-3">
+    <label for="language-select" class="form-label fw-bold">Translate Recipe</label>
+    <div class="input-group">
+        <select id="language-select" class="form-select" [(ngModel)]="selectedLanguage" (change)="onLanguageChange()">
+            <option value="">Select Language</option>
+            @for (lang of languages; track lang.code) {
+            <option [value]="lang.code">
+                {{ lang.flag }} {{ lang.name }}
+            </option>
+            }
+        </select>
+        @if (selectedLanguage) {
+        <button class="btn btn-outline-secondary" type="button" (click)="resetSelection()" title="Clear selection">
+            Clear
+        </button>
+        }
+    </div>
+    <div class="form-text text-muted">
+        Translate ingredients and instructions to another language
+    </div>
+</div>

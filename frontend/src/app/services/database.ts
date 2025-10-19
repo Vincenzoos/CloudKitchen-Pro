@@ -107,6 +107,15 @@ export interface HealthAnalysisResponse {
   error?: string;
 }
 
+export interface TranslationResponse {
+  success: boolean;
+  data?: {
+    translatedIngredients: string[];
+    translatedInstructions: string[];
+  };
+  error?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -215,6 +224,14 @@ export class Database {
     );
   }
 
+  // Translate recipe ingredients and instructions
+  translateRecipe(ingredients: string[], instructions: string[], targetLanguage: string, userId: string): Observable<TranslationResponse> {
+    return this.http.post<TranslationResponse>(
+      `${BASE_API_URL}/recipe/translate-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`,
+      { ingredients, instructions, targetLanguage },
+      httpOptions
+    );
+  }
   // ============================================
   // INVENTORY API CALLS
   // ============================================
