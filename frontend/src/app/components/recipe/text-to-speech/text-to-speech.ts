@@ -24,7 +24,6 @@ export class TextToSpeech implements OnInit, OnDestroy {
     audioElement: HTMLAudioElement | null = null;
     currentTime: number = 0;
     duration: number = 0;
-    volume: number = 1.0;
 
     // Loading and error states
     isGenerating: boolean = false;
@@ -33,7 +32,6 @@ export class TextToSpeech implements OnInit, OnDestroy {
 
     // Voice options
     selectedVoice: string = 'en-US-Neural2-A';
-    speakingRate: number = 1.0;
     availableVoices = [
         { name: 'English US (Male)', value: 'en-US-Neural2-A' },
         { name: 'English US (Female)', value: 'en-US-Neural2-C' },
@@ -94,8 +92,7 @@ export class TextToSpeech implements OnInit, OnDestroy {
             this.recipeTitle,
             this.userId,
             {
-                voiceName: this.selectedVoice,
-                speakingRate: this.speakingRate
+                voiceName: this.selectedVoice
             }
         )
             .pipe(takeUntil(this.destroy$))
@@ -155,16 +152,6 @@ export class TextToSpeech implements OnInit, OnDestroy {
             this.audioElement.currentTime = 0;
             this.isPlaying = false;
             this.currentTime = 0;
-        }
-    }
-
-    /**
-     * Set volume
-     */
-    setVolume(newVolume: number): void {
-        this.volume = newVolume;
-        if (this.audioElement) {
-            this.audioElement.volume = newVolume;
         }
     }
 
