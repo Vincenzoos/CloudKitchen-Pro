@@ -215,6 +215,11 @@ export class Database {
     );
   }
 
+
+  // ============================================
+  // HD TASK 1 - AI HEALTH ANALYSIS
+  // ============================================
+
   // Analyze recipe health using AI
   analyzeRecipeHealth(ingredients: string[], userId: string): Observable<HealthAnalysisResponse> {
     return this.http.post<HealthAnalysisResponse>(
@@ -223,6 +228,11 @@ export class Database {
       httpOptions
     );
   }
+
+
+  // ============================================
+  // HD TASK 2 - GOOGLE TRANSLATION API
+  // ============================================
 
   // Translate recipe ingredients and instructions
   translateRecipe(ingredients: string[], instructions: string[], targetLanguage: string, userId: string): Observable<TranslationResponse> {
