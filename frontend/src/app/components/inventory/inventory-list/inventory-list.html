@@ -54,20 +54,22 @@
                         </td>
                         <td class="text-nowrap">{{ item.quantity }}</td>
                         <td class="text-nowrap">{{ item.unit }}</td>
-                        <td class="text-nowrap">{{ formatDate(item.purchaseDate) }}</td>
+                        <td class="text-nowrap">{{ item.purchaseDate | date: 'shortDate' }}</td>
                         <td class="text-nowrap" [class.table-danger]="isExpired(item.expirationDate)"
                             [class.table-warning]="isExpiringsoon(item.expirationDate) && !isExpired(item.expirationDate)">
                             @if (isExpired(item.expirationDate)) {
-                            <span class="badge bg-danger">{{ formatDate(item.expirationDate) }} ⚠️ EXPIRED</span>
+                            <span class="badge bg-danger">{{ item.expirationDate | date: 'shortDate' }} ⚠️
+                                EXPIRED</span>
                             } @else if (isExpiringsoon(item.expirationDate)) {
-                            <span class="badge bg-warning text-dark">{{ formatDate(item.expirationDate) }} ⏰ Soon</span>
+                            <span class="badge bg-warning text-dark">{{ item.expirationDate | date: 'shortDate' }} ⏰
+                                Soon</span>
                             } @else {
-                            {{ formatDate(item.expirationDate) }}
+                            {{ item.expirationDate | date: 'shortDate' }}
                             }
                         </td>
                         <td class="text-nowrap">{{ item.location }}</td>
                         <td class="text-nowrap">${{ item.cost.toFixed(2) }}</td>
-                        <td class="text-nowrap">{{ formatDate(item.createdDate || '') }}</td>
+                        <td class="text-nowrap">{{ item.createdDate | date: 'shortDate' }}</td>
                         <td class="text-nowrap">
                             <button (click)="editInventory(item._id!)" class="btn btn-sm btn-outline-secondary me-1"
                                 title="Edit">

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Database, InventoryItem, InventoryListResponse, InventoryResponse } from '../../../services/database';
@@ -10,7 +10,7 @@ const STUDENT_ID = "33810672";
 @Component({
     selector: 'app-inventory-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, ToastNotificationComponent],
+    imports: [CommonModule, RouterModule, ToastNotificationComponent, DatePipe],
     templateUrl: './inventory-list.html',
     styleUrls: ['./inventory-list.css']
 })
@@ -157,11 +157,6 @@ export class InventoryList implements OnInit {
         const expDate = new Date(expirationDate);
         expDate.setHours(0, 0, 0, 0);
         return expDate.getTime() < today.getTime();
-    }
-
-    // Format date for display
-    formatDate(date: string | Date): string {
-        return new Date(date).toLocaleDateString();
     }
 
     // Pad inventory ID with zeros
