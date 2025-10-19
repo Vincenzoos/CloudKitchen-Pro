@@ -24,6 +24,12 @@ export class InventoryList implements OnInit {
     toastMessage: string = '';
     userId: string = '';
     STUDENT_ID = STUDENT_ID;
+    LOW_STOCK_THRESHOLD: number = 5;
+    SOON_TO_EXPIRED_THRESHOLD: number = 3;
+
+    // Filtering and sorting options
+    filterOption: string = 'all'; // 'all', 'expired', 'expiring-soon', 'low-stock'
+    sortOption: string = 'expiration-asc'; // 'expiration-asc', 'expiration-desc', 'category', 'name', 'cost-asc', 'cost-desc'
 
     // Inventory item to be deleted - for confirmation modal
     itemToDelete: InventoryItem | null = null;
@@ -34,6 +40,55 @@ export class InventoryList implements OnInit {
         private route: ActivatedRoute,
         private modalService: NgbModal
     ) { }
+
+    // Calculate total inventory value
+    get totalInventoryValue(): number {
+        return this.inventory.reduce((total, item) => total + (item.cost * item.quantity), 0);
+    }
+
+    // Get filtered and sorted inventory
+    get filteredInventory(): InventoryItem[] {
+        let filtered = this.inventory;
+
+        // Apply filter
+        switch (this.filterOption) {
+            case 'expired':
+                filtered = filtered.filter(item => this.isExpired(item.expirationDate));
+                break;
+            case 'expiring-soon':
+                filtered = filtered.filter(item => this.isExpiringsoon(item.expirationDate) && !this.isExpired(item.expirationDate));
+                break;
+            case 'low-stock':
+                filtered = filtered.filter(item => item.quantity <= this.LOW_STOCK_THRESHOLD);
+                break;
+            case 'all':
+            default:
+                // No filtering
+                break;
+        }
+
+        // Apply sorting
+        filtered.sort((a, b) => {
+            switch (this.sortOption) {
+                case 'expiration-asc':
+                    return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
+                case 'expiration-desc':
+                    return new Date(b.expirationDate).getTime() - new Date(a.expirationDate).getTime();
+                case 'category':
+                    return a.category.localeCompare(b.category);
+                case 'name':
+                    return a.ingredientName.localeCompare(b.ingredientName);
+                case 'cost-asc':
+                    return a.cost - b.cost;
+                case 'cost-desc':
+                    return b.cost - a.cost;
+                default:
+                    return 0;
+            }
+        });
+
+        return filtered;
+    }
 
     ngOnInit(): void {
         // Get userId from route query parameters
@@ -81,6 +136,16 @@ export class InventoryList implements OnInit {
         this.router.navigate([`/inventory/add-${STUDENT_ID}`], {
             queryParams: { userId: this.userId }
         });
+    }
+
+    // Handle filter change
+    onFilterChange(event: any): void {
+        this.filterOption = event.target.value;
+    }
+
+    // Handle sort change
+    onSortChange(event: any): void {
+        this.sortOption = event.target.value;
     }
 
     // Navigate to edit inventory page
@@ -140,6 +205,10 @@ export class InventoryList implements OnInit {
         });
     }
 
+    isLowStock(quantity: number): boolean {
+        return quantity <= this.LOW_STOCK_THRESHOLD;
+    }
+
     // Check if item is expiring soon (within 7 days)
     isExpiringsoon(expirationDate: string | Date): boolean {
         const today = new Date();
@@ -147,7 +216,7 @@ export class InventoryList implements OnInit {
         const expDate = new Date(expirationDate);
         expDate.setHours(0, 0, 0, 0);
         const daysUntilExpiry = (expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-        return daysUntilExpiry <= 7 && daysUntilExpiry >= 0;
+        return daysUntilExpiry <= this.SOON_TO_EXPIRED_THRESHOLD && daysUntilExpiry >= 0;
     }
 
     // Check if item is expired
