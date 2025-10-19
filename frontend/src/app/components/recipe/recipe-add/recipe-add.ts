@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Database, RecipeResponse, FormOptionsResponse } from '../../../services/database';
 
@@ -9,13 +9,23 @@ const STUDENT_ID = "33810672";
 @Component({
     selector: 'app-recipe-add',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule],
     templateUrl: './recipe-add.html',
     styleUrls: ['./recipe-add.css']
 })
 export class RecipeAdd implements OnInit {
-    recipeForm!: FormGroup;
-    submitted = false;
+    formData = {
+        title: '',
+        chef: '',
+        prepTime: '',
+        mealType: '',
+        cuisineType: '',
+        difficulty: '',
+        servings: '',
+        ingredients: '',
+        instructions: ''
+    };
+
     loading = false;
     error = '';
     errors: string[] = [];
@@ -31,7 +41,6 @@ export class RecipeAdd implements OnInit {
     currentUser: any = null;
 
     constructor(
-        private formBuilder: FormBuilder,
         private database: Database,
         private router: Router
     ) {
@@ -39,23 +48,11 @@ export class RecipeAdd implements OnInit {
         const userStr = localStorage.getItem('user');
         if (userStr) {
             this.currentUser = JSON.parse(userStr);
+            this.formData.chef = this.currentUser?.fullname || '';
         }
     }
 
     ngOnInit(): void {
-        // Initialize form
-        this.recipeForm = this.formBuilder.group({
-            title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-            chef: [{ value: this.currentUser?.fullname || '', disabled: true }, Validators.required],
-            prepTime: ['', [Validators.required, Validators.min(1), Validators.max(480)]],
-            mealType: ['', Validators.required],
-            cuisineType: ['', Validators.required],
-            difficulty: ['', Validators.required],
-            servings: ['', [Validators.required, Validators.min(1), Validators.max(20)]],
-            ingredients: ['', Validators.required],
-            instructions: ['', Validators.required]
-        });
-
         // Load form options
         this.loadFormOptions();
     }
@@ -76,22 +73,13 @@ export class RecipeAdd implements OnInit {
         });
     }
 
-    // Convenience getter for easy access to form fields
-    get f() { return this.recipeForm.controls; }
-
     onSubmit(): void {
-        this.submitted = true;
         this.errors = [];
         this.error = '';
 
         // Check if form options are loaded
         if (this.mealTypes.length === 0 || this.cuisineTypes.length === 0 || this.difficultyTypes.length === 0) {
             this.error = 'Form options are still loading. Please wait a moment and try again.';
-            return;
-        }
-
-        // Stop if form is invalid
-        if (this.recipeForm.invalid) {
             return;
         }
 
@@ -105,18 +93,17 @@ export class RecipeAdd implements OnInit {
         }
 
         // Prepare recipe data with kebab-case keys for backend compatibility
-        const formValue = this.recipeForm.value;
         const recipe: any = {
-            title: formValue.title,
-            chef: this.currentUser?.fullname || formValue.chef,
-            'prep-time': parseInt(formValue.prepTime),
-            'meal-type': formValue.mealType,
-            'cuisine-type': formValue.cuisineType,
-            difficulty: formValue.difficulty,
-            servings: parseInt(formValue.servings),
+            title: this.formData.title,
+            chef: this.currentUser?.fullname || this.formData.chef,
+            'prep-time': parseInt(this.formData.prepTime),
+            'meal-type': this.formData.mealType,
+            'cuisine-type': this.formData.cuisineType,
+            difficulty: this.formData.difficulty,
+            servings: parseInt(this.formData.servings),
             // Split ingredients and instructions by newline
-            ingredients: formValue.ingredients.split('\n').map((i: string) => i.trim()).filter((i: string) => i),
-            instructions: formValue.instructions.split('\n').map((i: string) => i.trim()).filter((i: string) => i)
+            ingredients: this.formData.ingredients.split('\n').map((i: string) => i.trim()).filter((i: string) => i),
+            instructions: this.formData.instructions.split('\n').map((i: string) => i.trim()).filter((i: string) => i)
         };
 
         // Call API to create recipe
