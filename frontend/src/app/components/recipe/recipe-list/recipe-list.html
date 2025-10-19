@@ -49,11 +49,7 @@
                     @for (recipe of recipes; track recipe._id) {
                     <tr>
                         <td class="text-danger fw-semibold text-nowrap">{{ padRecipeId(recipe.recipeId) }}</td>
-                        <td class="fw-bold text-nowrap">
-                            <a [routerLink]="['/recipe/detail-' + STUDENT_ID, recipe._id]" class="text-decoration-none">
-                                {{ recipe.title }}
-                            </a>
-                        </td>
+                        <td class="fw-bold text-nowrap">{{ recipe.title }}</td>
                         <td class="text-nowrap">{{ recipe.chef }}</td>
                         <td class="text-nowrap">
                             <span class="badge bg-primary">{{ recipe.mealType }}</span>
