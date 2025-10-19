@@ -34,22 +34,29 @@
                             <input class="form-control" id="email" name="email" type="email"
                                 pattern="^\w+([\.\-]?\w+)*@\w+([\.\-]?\w+)*(\.\w{2,3})+$"
                                 title="Please enter a valid email address (e.g., example@mail.com)"
-                                [(ngModel)]="formData.email" #email="ngModel" required />
-                            @if (email.invalid && email.touched) {
-                            <small class="form-text text-danger">Please enter a valid email address (e.g.,
-                                example@mail.com)</small>
-                            }
+                                [(ngModel)]="formData.email" #email="ngModel" required
+                                [class.is-invalid]="email.invalid && email.touched" />
+                            <div class="invalid-feedback">
+                                @if (email.invalid && email.touched) {
+                                <div>Please enter a valid email address (e.g.,
+                                    example@mail.com)</div>
+                                }
+                            </div>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label" for="password">Password *</label>
                             <input class="form-control" id="password" name="password" type="password" minlength="8"
                                 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$"
                                 title="Password must be at least 8 characters long, with uppercase, lowercase, a number, and a special character"
-                                [(ngModel)]="formData.password" #password="ngModel" required />
-                            @if (password.invalid && password.touched) {
-                            <small class="form-text text-danger">Must be at least 8 characters with
-                                uppercase, lowercase, number, and special character</small>
-                            }
+                                [(ngModel)]="formData.password" #password="ngModel" required
+                                [class.is-invalid]="password.invalid && password.touched" />
+                            <div class="invalid-feedback">
+                                @if (password.invalid && password.touched) {
+                                <div>Must be at least 8 characters with
+                                    uppercase, lowercase, number, and special character</div>
+                                }
+                            </div>
+
                         </div>
 
                         <div class="col-12 d-flex justify-content-center mt-4 gap-2">

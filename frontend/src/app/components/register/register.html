@@ -31,46 +31,57 @@
                             <input class="form-control" id="email" name="email" type="email"
                                 pattern="^\w+([\.\-]?\w+)*@\w+([\.\-]?\w+)*(\.\w{2,3})+$"
                                 title="Please enter a valid email address (e.g., example@mail.com)"
-                                [(ngModel)]="formData.email" #email="ngModel" required />
-                            @if (email.invalid && email.touched) {
-                            <small class="form-text text-danger">Please enter a valid email address (e.g.,
-                                example@mail.com)</small>
-                            }
+                                [(ngModel)]="formData.email" #email="ngModel" required
+                                [class.is-invalid]="email.invalid && email.touched" />
+                            <div class="invalid-feedback">
+                                @if (email.invalid && email.touched) {
+                                <div>Must be a valid email address (e.g., example@mail.com)</div>
+                                }
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="password">Password *</label>
                             <input class="form-control" id="password" name="password" type="password" minlength="8"
                                 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$"
                                 title="Password must be at least 8 characters long, with uppercase, lowercase, a number, and a special character"
-                                [(ngModel)]="formData.password" #password="ngModel" required />
-                            @if (password.invalid && password.touched) {
-                            <small class="form-text text-danger">Must be at least 8 characters with
-                                uppercase, lowercase, number, and special character</small>
-                            }
+                                [(ngModel)]="formData.password" #password="ngModel" required
+                                [class.is-invalid]="password.invalid && password.touched" />
+                            <div class="invalid-feedback">
+                                @if (password.invalid && password.touched) {
+                                <div>Must be at least 8 characters with
+                                    uppercase, lowercase, number, and special character</div>
+                                }
+                            </div>
+
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="fullname">Full Name *</label>
                             <input class="form-control" id="fullname" name="fullname" type="text"
                                 pattern="^[a-zA-Z\s\-']+$" minlength="2" maxlength="100"
                                 title="Full name must only contain letters, spaces, hyphens, and apostrophes"
-                                [(ngModel)]="formData.fullname" #fullname="ngModel" required />
-                            @if (fullname.invalid && fullname.touched) {
-                            <small class="form-text text-danger">Must be at least 2 characters long and can only contain
-                                letters, spaces, hyphens, and apostrophes</small>
-                            }
+                                [(ngModel)]="formData.fullname" #fullname="ngModel" required
+                                [class.is-invalid]="fullname.invalid && fullname.touched" />
+                            <div class="invalid-feedback">
+                                @if (fullname.invalid && fullname.touched) {
+                                <div>Must be at least 2 characters long and can only contain
+                                    letters, spaces, hyphens, and apostrophes</div>
+                                }
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="role">Role *</label>
                             <select class="form-select" id="role" name="role" [(ngModel)]="formData.role"
-                                #role="ngModel" required>
+                                #role="ngModel" required [class.is-invalid]="role.invalid && role.touched">
                                 <option value="">Select role</option>
                                 <option value="admin">Admin</option>
                                 <option value="chef">Chef</option>
                                 <option value="manager">Manager</option>
                             </select>
-                            @if (role.invalid && role.touched) {
-                            <small class="form-text text-danger">Please select a role</small>
-                            }
+                            <div class="invalid-feedback">
+                                @if (role.invalid && role.touched) {
+                                <div>Please select a role</div>
+                                }
+                            </div>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label" for="phone">Phone Number *</label>
@@ -78,10 +89,14 @@
                                 pattern="^\+61 4\d{2} \d{3} \d{3}$"
                                 title="Phone number must follow the format: +61 4xx xxx xxx"
                                 placeholder="+61 4xx xxx xxx" maxlength="15" (input)="formatPhoneNumber($event)"
-                                [(ngModel)]="formData.phone" #phone="ngModel" required />
-                            @if (phone.invalid && phone.touched) {
-                            <small class="form-text text-danger">Must be in the format: +61 4xx xxx xxx</small>
-                            }
+                                [(ngModel)]="formData.phone" #phone="ngModel" required
+                                [class.is-invalid]="phone.invalid && phone.touched" />
+
+                            <div class="invalid-feedback">
+                                @if (phone.invalid && phone.touched) {
+                                <div>Must be in the format: +61 4xx xxx xxx</div>
+                                }
+                            </div>
                         </div>
                         <div class="col-12 d-flex justify-content-center mt-4 gap-2">
                             <button class="btn btn-dark px-5" type="submit">Register</button>
