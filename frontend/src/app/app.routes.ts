@@ -14,7 +14,10 @@ import { authGuard } from './guards/auth.guard';
 
 const STUDENT_ID = "33810672";
 export const routes: Routes = [
+    // Home route - protected by authGuard
     { path: '', component: Dashboard, canActivate: [authGuard] },
+
+    // Auth routes
     { path: `user/login-${STUDENT_ID}`, component: Login },
     { path: `user/register-${STUDENT_ID}`, component: Register },
 
@@ -29,5 +32,6 @@ export const routes: Routes = [
     { path: `inventory/add-${STUDENT_ID}`, component: InventoryAdd, canActivate: [authGuard] },
     { path: `inventory/edit-${STUDENT_ID}/:id`, component: InventoryEdit, canActivate: [authGuard] },
 
+    // Wildcard route for 404 Not Found page
     { path: '**', component: NotFound },
 ];

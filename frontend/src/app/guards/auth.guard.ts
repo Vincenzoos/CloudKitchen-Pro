@@ -21,7 +21,13 @@ export const authGuard: CanActivateFn = async (route, state) => {
         const response = await firstValueFrom(database.getCurrentUser(userId));
 
         if (response.success && response.user) {
-            // User is logged in on backend, allow access
+            const user = response.user;
+            // Access perimission check for recipe routes
+            if (state.url.includes('/recipe/') && user.role !== 'chef') {
+                // Not a chef, redirect to dashboard with message
+                return router.createUrlTree(['/'], { queryParams: { userId, message: 'Access denied: Chef role required for recipes' } });
+            }
+            // User is logged in and has appropriate role, allow access
             return true;
         } else {
             // User not logged in on backend, redirect to login with returnUrl

@@ -70,7 +70,11 @@ export class RecipeList implements OnInit {
             },
             error: (err: any) => {
                 console.error('Error fetching recipes:', err);
-                this.error = 'Failed to load recipes. Please try again.';
+                if (err.status === 403) {
+                    this.error = 'Access denied: Chef role required for recipes.';
+                } else {
+                    this.error = 'Failed to load recipes. Please try again.';
+                }
                 this.loading = false;
             }
         });
