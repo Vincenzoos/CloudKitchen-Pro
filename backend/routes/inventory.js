@@ -444,11 +444,10 @@ router.post(`/add-${STUDENT_ID}`, inventoryValidationMiddleware, async (req, res
 // GET - Get a single inventory item by ID (JSON API)
 router.get(`/edit-${STUDENT_ID}/:id`, async (req, res) => {
     const id = req.params.id;
-    const userId = req.user.userId;
 
     try {
         // Ensure the inventory item exists
-        const inventory = await Inventory.findOne({ _id: id, userId: userId });
+        const inventory = await Inventory.findOne({ _id: id });
         if (!inventory) {
             return res.status(404).json({
                 success: false,
@@ -564,10 +563,9 @@ router.post(`/edit-${STUDENT_ID}/:id`, inventoryValidationMiddleware, async (req
 // POST - Delete an inventory item (JSON API)
 router.post(`/delete-${STUDENT_ID}`, async (req, res) => {
     try {
-        const userId = req.user.userId;
         const id = req.body.id;
 
-        // Find and delete the inventory item if it belongs to the logged-in user
+        // Find and delete the inventory item
         const deletedInventory = await Inventory.findByIdAndDelete(id);
 
         // If no inventory item was found to delete, return 404

@@ -8,14 +8,20 @@
                 </div>
                 <div class="card-body">
                     <!-- Display errors if any -->
-                    <div *ngIf="errors.length > 0" class="alert alert-danger">
+                    @if (errors.length > 0) {
+                    <div class="alert alert-danger">
                         <ul class="mb-0">
-                            <li *ngFor="let error of errors">{{ error }}</li>
+                            @for (err of errors; track err) {
+                            <li>{{ err }}</li>
+                            }
                         </ul>
                     </div>
+                    }
 
                     <!-- Display general error -->
-                    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+                    @if (error) {
+                    <div class="alert alert-danger">{{ error }}</div>
+                    }
 
                     <form class="row g-4" (ngSubmit)="onSubmit()">
                         <!-- Basic Information -->
@@ -33,9 +39,11 @@
                             <select class="form-select" id="category" [(ngModel)]="formData.category" name="category"
                                 required>
                                 <option value="" disabled>Select a category...</option>
-                                <option *ngFor="let category of allowedCategories" [value]="category">
+                                @for (category of allowedCategories; track category) {
+                                <option [value]="category">
                                     {{ category.charAt(0).toUpperCase() + category.slice(1) }}
                                 </option>
+                                }
                             </select>
                         </div>
 
@@ -53,9 +61,11 @@
                             <select class="form-select" id="unitMeasurement" [(ngModel)]="formData.unitMeasurement"
                                 name="unitMeasurement" required>
                                 <option value="" disabled>Select unit...</option>
-                                <option *ngFor="let unit of allowedUnits" [value]="unit">
+                                @for (unit of allowedUnits; track unit) {
+                                <option [value]="unit">
                                     {{ unit.charAt(0).toUpperCase() + unit.slice(1) }}
                                 </option>
+                                }
                             </select>
                         </div>
 
@@ -84,9 +94,11 @@
                             <select class="form-select" id="location" [(ngModel)]="formData.location" name="location"
                                 required>
                                 <option value="" disabled>Select location...</option>
-                                <option *ngFor="let location of allowedLocations" [value]="location">
+                                @for (location of allowedLocations; track location) {
+                                <option [value]="location">
                                     {{ location.charAt(0).toUpperCase() + location.slice(1) }}
                                 </option>
+                                }
                             </select>
                         </div>
                         <div class="col-md-6">
