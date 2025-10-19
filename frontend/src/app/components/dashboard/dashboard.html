@@ -86,10 +86,6 @@
                         class="btn btn-outline-primary w-100 mb-2">
                         My Recipes
                     </a>
-                    <a [routerLink]="['/recipe/availability-33810672']" [queryParams]="{ userId: user.userId }"
-                        class="btn btn-outline-primary w-100 mb-2">
-                        Recipe Availability
-                    </a>
                 </div>
             </div>
         </div>
@@ -109,32 +105,8 @@
                         class="btn btn-outline-success w-100 mb-2">
                         View All Inventory
                     </a>
-                    <a [routerLink]="['/inventory/alerts-33810672']" [queryParams]="{ userId: user.userId }"
-                        class="btn btn-outline-success w-100 mb-2">
-                        Inventory Alerts
-                    </a>
-                    <a [routerLink]="['/inventory/insights-33810672']" [queryParams]="{ userId: user.userId }"
-                        class="btn btn-outline-success w-100 mb-2">
-                        Inventory Insights
-                    </a>
                 </div>
             </div>
         </div>
-        <!-- Report Actions (admin only) -->
-        @if (user.role === 'admin') {
-        <div class="col-md-4 mb-3">
-            <div class="card border-info h-100">
-                <div class="card-header bg-info text-white fw-bold text-center">
-                    Report Actions
-                </div>
-                <div class="card-body text-center">
-                    <a [routerLink]="['/report/analytics-33810672']" [queryParams]="{ userId: user.userId }"
-                        class="btn btn-outline-info w-100 mb-2">
-                        View Reports
-                    </a>
-                </div>
-            </div>
-        </div>
-        }
     </div>
 </div>
