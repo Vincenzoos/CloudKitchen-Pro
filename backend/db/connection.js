@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 // MongoDB connection string with database name included
 // Mongoose automatically handles database selection through the connection string
-const mongoURI = 'mongodb://localhost:27017/fit2095-a2';
+const mongoURI = 'mongodb://localhost:27017/fit2095-a3';
 
 // Function to establish Mongoose connection
 async function connectToMongoDB() {
