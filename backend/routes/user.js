@@ -112,6 +112,40 @@ router.post(`/login-${STUDENT_ID}`, async (req, res) => {
 });
 
 // ============================================
+// VERIFY USER LOGIN STATUS
+// ============================================
+router.get(`/me-${STUDENT_ID}`, async (req, res) => {
+    const { userId } = req.query;
+    if (!userId) {
+        return res.status(401).json({ error: 'User ID required' });
+    }
+    try {
+        const user = await User.findOne({ userId });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!user.isLoggedIn) {
+            return res.status(401).json({ error: 'User not logged in' });
+        }
+
+        // User is logged in, return user info
+        return res.status(200).json({
+            success: true,
+            user: {
+                userId: user.userId,
+                fullname: user.fullname,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (err) {
+        console.error('Auth verification error:', err);
+        return res.status(500).json({ error: 'Auth verification failed' });
+    }
+});
+
+// ============================================
 // LOGOUT ROUTE
 // ============================================
 router.get(`/logout-${STUDENT_ID}`, async (req, res) => {

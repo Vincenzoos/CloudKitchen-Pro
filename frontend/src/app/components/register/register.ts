@@ -83,5 +83,4 @@ export class Register {
     // Update the model
     this.formData.phone = phone.trim();
   }
-
 }

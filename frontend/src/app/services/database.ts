@@ -77,6 +77,11 @@ export class Database {
     return this.http.get(`${BASE_API_URL}/user/logout-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`);
   }
 
+  // Verify user is logged in with backend
+  verifyUserLogin(userId: string): Observable<any> {
+    return this.http.get(`${BASE_API_URL}/user/me-${STUDENT_ID}?userId=${encodeURIComponent(userId)}`, httpOptions);
+  }
+
   // Get dashboard data
   getDashboardData(userId: string) {
     return this.http.get(`${BASE_API_URL}/?userId=${encodeURIComponent(userId)}`);

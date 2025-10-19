@@ -6,9 +6,6 @@ import { Database, RecipeResponse, FormOptionsResponse } from '../../../services
 
 const STUDENT_ID = "33810672";
 
-// TODO: Cannot use ReactiveFormsModule, FormGroup, Validators, use template drive form module for all forms
-// TODO: Reconsider the use of localStorage to save user data, might need to switch back to storing/passing it in query params
-// TODO: Might need to remove ActivatedRoute if not using route params as not included in Angular built-in modules (FormsModule, HttpClientModule, RouterModule, etc.).
 // TODO: Look at w10 on how to use  Confirmation Dialogs with ng-bootstrap, might need to replace toast with that
 @Component({
     selector: 'app-recipe-edit',
@@ -36,6 +33,7 @@ export class RecipeEdit implements OnInit {
     errors: string[] = [];
 
     recipeId: string = '';
+    userId: string = '';
 
     // Form options from backend
     mealTypes: string[] = [];
@@ -61,6 +59,11 @@ export class RecipeEdit implements OnInit {
 
         this.recipeId = id;
 
+        // Get userId from route query parameters
+        this.route.queryParams.subscribe(params => {
+            this.userId = params['userId'];
+        });
+
         // Load form options and recipe data
         this.loadFormOptions();
         this.loadRecipe(id);
@@ -85,14 +88,13 @@ export class RecipeEdit implements OnInit {
         this.loadingRecipe = true;
         this.error = '';
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
+        if (!this.userId) {
             this.error = 'User not logged in';
             this.loadingRecipe = false;
             return;
         }
 
-        this.database.getRecipeById(id, userId).subscribe({
+        this.database.getRecipeById(id, this.userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success && response.data) {
                     const recipe = response.data;
@@ -135,8 +137,7 @@ export class RecipeEdit implements OnInit {
 
         this.loading = true;
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
+        if (!this.userId) {
             this.error = 'User not logged in';
             this.loading = false;
             return;
@@ -157,13 +158,13 @@ export class RecipeEdit implements OnInit {
         };
 
         // Call API to update recipe
-        this.database.updateRecipe(this.recipeId, recipe, userId).subscribe({
+        this.database.updateRecipe(this.recipeId, recipe, this.userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success) {
                     // Navigate back to recipes list with success message
                     const title = recipe.title || 'Recipe';
                     this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
-                        queryParams: { message: `Recipe "${title}" updated successfully` }
+                        queryParams: { userId: this.userId, message: `Recipe "${title}" updated successfully` }
                     });
                 } else {
                     this.errors = response.errors || [response.error || 'Failed to update recipe'];
@@ -180,6 +181,8 @@ export class RecipeEdit implements OnInit {
     }
 
     cancel(): void {
-        this.router.navigate([`/recipe/recipes-${STUDENT_ID}`]);
+        this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
+            queryParams: { userId: this.userId }
+        });
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { Database, RecipeResponse, FormOptionsResponse } from '../../../services/database';
 
 const STUDENT_ID = "33810672";
@@ -29,6 +29,8 @@ export class RecipeAdd implements OnInit {
     loading = false;
     error = '';
     errors: string[] = [];
+    userId: string = '';
+    currentUser: any = null;
 
     // Form options from backend
     mealTypes: string[] = [];
@@ -37,22 +39,18 @@ export class RecipeAdd implements OnInit {
 
     STUDENT_ID = STUDENT_ID;
 
-    // Get current user from localStorage
-    currentUser: any = null;
-
     constructor(
         private database: Database,
-        private router: Router
-    ) {
-        // Get current user
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            this.currentUser = JSON.parse(userStr);
-            this.formData.chef = this.currentUser?.fullname || '';
-        }
-    }
+        private router: Router,
+        private route: ActivatedRoute
+    ) { }
 
     ngOnInit(): void {
+        // Get userId from route query parameters
+        this.route.queryParams.subscribe(params => {
+            this.userId = params['userId'];
+        });
+
         // Load form options
         this.loadFormOptions();
     }
@@ -85,8 +83,7 @@ export class RecipeAdd implements OnInit {
 
         this.loading = true;
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
+        if (!this.userId) {
             this.error = 'User not logged in';
             this.loading = false;
             return;
@@ -95,7 +92,7 @@ export class RecipeAdd implements OnInit {
         // Prepare recipe data with kebab-case keys for backend compatibility
         const recipe: any = {
             title: this.formData.title,
-            chef: this.currentUser?.fullname || this.formData.chef,
+            chef: this.formData.chef,
             'prep-time': parseInt(this.formData.prepTime),
             'meal-type': this.formData.mealType,
             'cuisine-type': this.formData.cuisineType,
@@ -107,13 +104,13 @@ export class RecipeAdd implements OnInit {
         };
 
         // Call API to create recipe
-        this.database.createRecipe(recipe, userId).subscribe({
+        this.database.createRecipe(recipe, this.userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success) {
                     // Navigate back to recipes list with success message
                     const title = recipe.title || 'Recipe';
                     this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
-                        queryParams: { message: `Recipe "${title}" created successfully` }
+                        queryParams: { userId: this.userId, message: `Recipe "${title}" created successfully` }
                     });
                 } else {
                     this.errors = response.errors || [response.error || 'Failed to create recipe'];
@@ -130,6 +127,8 @@ export class RecipeAdd implements OnInit {
     }
 
     cancel(): void {
-        this.router.navigate([`/recipe/recipes-${STUDENT_ID}`]);
+        this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
+            queryParams: { userId: this.userId }
+        });
     }
 }

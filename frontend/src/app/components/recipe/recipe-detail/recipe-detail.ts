@@ -16,6 +16,7 @@ export class RecipeDetail implements OnInit {
     recipe: Recipe | null = null;
     loading: boolean = true;
     error: string = '';
+    userId: string = '';
     STUDENT_ID = STUDENT_ID;
 
     constructor(
@@ -25,6 +26,11 @@ export class RecipeDetail implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        // Get userId from route query parameters
+        this.route.queryParams.subscribe(params => {
+            this.userId = params['userId'];
+        });
+
         // Get recipe ID from route parameter
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
@@ -39,14 +45,13 @@ export class RecipeDetail implements OnInit {
         this.loading = true;
         this.error = '';
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
+        if (!this.userId) {
             this.error = 'User not logged in';
             this.loading = false;
             return;
         }
 
-        this.database.getRecipeById(id, userId).subscribe({
+        this.database.getRecipeById(id, this.userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success && response.data) {
                     this.recipe = response.data;
@@ -65,12 +70,16 @@ export class RecipeDetail implements OnInit {
 
     editRecipe(): void {
         if (this.recipe && this.recipe._id) {
-            this.router.navigate([`/recipe/edit-${STUDENT_ID}`, this.recipe._id]);
+            this.router.navigate([`/recipe/edit-${STUDENT_ID}`, this.recipe._id], {
+                queryParams: { userId: this.userId }
+            });
         }
     }
 
     backToList(): void {
-        this.router.navigate([`/recipe/recipes-${STUDENT_ID}`]);
+        this.router.navigate([`/recipe/recipes-${STUDENT_ID}`], {
+            queryParams: { userId: this.userId }
+        });
     }
 
     // Get badge color based on difficulty

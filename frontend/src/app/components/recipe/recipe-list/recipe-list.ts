@@ -20,6 +20,7 @@ export class RecipeList implements OnInit {
     loading: boolean = true;
     error: string = '';
     toastMessage: string = '';
+    userId: string = '';
     STUDENT_ID = STUDENT_ID;
 
     // Recipe to be deleted - for confirmation modal
@@ -32,28 +33,30 @@ export class RecipeList implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        // Check for success message from navigation
+        // Get userId from route query parameters
         this.route.queryParams.subscribe(params => {
+            this.userId = params['userId'];
             if (params['message']) {
                 this.showToast(params['message']);
             }
+            // Load recipes whenever userId changes
+            if (this.userId) {
+                this.loadRecipes();
+            }
         });
-
-        this.loadRecipes();
     }
 
     loadRecipes(): void {
         this.loading = true;
         this.error = '';
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
+        if (!this.userId) {
             this.error = 'User not logged in';
             this.loading = false;
             return;
         }
 
-        this.database.getAllRecipes(userId).subscribe({
+        this.database.getAllRecipes(this.userId).subscribe({
             next: (response: RecipesListResponse) => {
                 if (response.success && response.data) {
                     this.recipes = response.data;
@@ -72,17 +75,23 @@ export class RecipeList implements OnInit {
 
     // Navigate to add recipe page
     addRecipe(): void {
-        this.router.navigate([`/recipe/add-${STUDENT_ID}`]);
+        this.router.navigate([`/recipe/add-${STUDENT_ID}`], {
+            queryParams: { userId: this.userId }
+        });
     }
 
     // Navigate to view recipe details
     viewRecipe(id: string): void {
-        this.router.navigate([`/recipe/detail-${STUDENT_ID}`, id]);
+        this.router.navigate([`/recipe/detail-${STUDENT_ID}`, id], {
+            queryParams: { userId: this.userId }
+        });
     }
 
     // Navigate to edit recipe page
     editRecipe(id: string): void {
-        this.router.navigate([`/recipe/edit-${STUDENT_ID}`, id]);
+        this.router.navigate([`/recipe/edit-${STUDENT_ID}`, id], {
+            queryParams: { userId: this.userId }
+        });
     }
 
     // Open delete confirmation modal
@@ -110,8 +119,7 @@ export class RecipeList implements OnInit {
     deleteRecipe(): void {
         if (!this.recipeToDelete || !this.recipeToDelete._id) return;
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
+        if (!this.userId) {
             this.error = 'User not logged in';
             return;
         }
@@ -119,7 +127,7 @@ export class RecipeList implements OnInit {
         const id = this.recipeToDelete._id;
         const title = this.recipeToDelete.title;
 
-        this.database.deleteRecipe(id, userId).subscribe({
+        this.database.deleteRecipe(id, this.userId).subscribe({
             next: (response: RecipeResponse) => {
                 if (response.success) {
                     this.showToast(`Recipe "${title}" deleted successfully`);

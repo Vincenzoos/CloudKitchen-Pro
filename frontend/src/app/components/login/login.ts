@@ -48,19 +48,13 @@ export class Login implements OnInit {
     this.database.loginUser(this.formData).subscribe({
       next: (response: any) => {
         console.log('Login successful:', response);
-        // Store userId in localStorage
-        localStorage.setItem('userId', response.userId);
-        // Store user object in localStorage
-        localStorage.setItem('user', JSON.stringify(response.user));
-        // Dispatch custom event to notify App component
-        window.dispatchEvent(new Event('userUpdated'));
         // Set success message and show toast
         this.msg = response.message || 'Successfully logged in!';
         this.showToast();
 
-        // Navigate to dashboard/home/index page with message
+        // Navigate to dashboard with userId as query parameter
         this.router.navigate(['/'], {
-          queryParams: { message: this.msg }
+          queryParams: { userId: response.userId, message: this.msg }
         });
       },
       error: (err) => {

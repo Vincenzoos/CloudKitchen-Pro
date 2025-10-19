@@ -17,27 +17,32 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   user: any = {};
   stats: any = {};
   student: any = {};
+  userId: string = '';
   private refreshSubscription?: Subscription;
 
   constructor(private route: ActivatedRoute, private database: Database) { }
 
   ngOnInit() {
-    // Check for success message from login
+    // Get userId from route query parameters
     this.route.queryParams.subscribe(params => {
+      this.userId = params['userId'];
       if (params['message']) {
         this.msg = params['message'];
         this.showToast();
       }
+      // Load dashboard data whenever userId or query params change
+      if (this.userId) {
+        this.loadDashboardData();
+      }
     });
-
-    // Load dashboard data immediately on init
-    this.loadDashboardData();
   }
 
   ngAfterViewInit() {
     // Set up real-time updates every 30 seconds after view initializes
     this.refreshSubscription = interval(30000).subscribe(() => {
-      this.loadDashboardData();
+      if (this.userId) {
+        this.loadDashboardData();
+      }
     });
   }
 
@@ -48,10 +53,9 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadDashboardData() {
-    const userId = localStorage.getItem('userId');
-    console.log('Logged in userId:', userId);
-    if (userId) {
-      this.database.getDashboardData(userId).subscribe({
+    console.log('Logged in userId:', this.userId);
+    if (this.userId) {
+      this.database.getDashboardData(this.userId).subscribe({
         next: (response: any) => {
           this.user = response.user;
           this.stats = response.stats;
