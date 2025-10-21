@@ -7,7 +7,7 @@ const httpOptions = {
 };
 
 // Backend URL configuration
-const BASE_API_URL = "http://localhost:8081/api";
+const BASE_API_URL = window.location.origin + "/api";
 const STUDENT_ID = "33810672";
 
 // Recipe interface to match backend model
