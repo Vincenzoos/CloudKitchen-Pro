@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 // MongoDB connection string with database name included
 // Mongoose automatically handles database selection through the connection string
 // Use environment variable for production deployment, fallback to localhost for development
-const mongoURI = 'mongodb://localhost:27017/fit2095-a3';
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/fit2095-a3';
 
 // Function to establish Mongoose connection
 async function connectToMongoDB() {
