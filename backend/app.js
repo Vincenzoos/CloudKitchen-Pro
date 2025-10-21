@@ -4,6 +4,7 @@ require('dotenv').config();
 // Import the Express framework - this is the core of our web application
 const express = require('express');
 const ejs = require("ejs");
+const path = require('path');
 const { connectToMongoDB } = require('./db/connection');
 const User = require('./models/User');
 const Recipe = require('./models/Recipe');
@@ -37,11 +38,21 @@ app.use(express.urlencoded({ extended: true }));
 // Add JSON parsing for API requests (e.g., from Angular frontend)
 app.use(express.json());
 
+// ADD THIS ARRAY:
+// const allowedOrigins = [
+//     'http://localhost:4200',         // For your local development
+//     'http://localhost:8081',         // For serving frontend from backend
+//     'http://34.129.123.162:4200'   // For your deployed VM
+// ];
+
 // Enable CORS for all routes
-app.use(cors({
-    origin: 'http://localhost:4200',
-    credentials: true  // If using cookies/auth
-}));
+// app.use(cors({
+//     origin: allowedOrigins,
+//     credentials: true  // If using cookies/auth
+// }));
+
+// Serve static files from the Angular build directory
+app.use(express.static(path.join(__dirname, '../frontend/dist/A3_CloudKitchen_Pro/browser')));
 
 // Import authentication middleware
 const { requireLogin } = require('./middleware/auth');
@@ -118,7 +129,6 @@ app.use('/api/recipe', apiRecipeRoute);
 const apiInventoryRoute = require('./routes/inventory');
 app.use('/api/inventory', apiInventoryRoute);
 
-
 // Start the server and listen for incoming requests
 // The callback function runs once the server starts successfully
 // ============================================
@@ -135,13 +145,15 @@ async function startServer() {
     });
 
     // Initialize Socket.io for real-time communication (for text-to-speech)
-    const io = socketIo(server, {
-        cors: {
-            origin: 'http://localhost:4200',  // Allow Angular dev server or production frontend
-            methods: ['GET', 'POST'],
-            credentials: true
-        }
-    });
+    // const io = socketIo(server, {
+    //     cors: {
+    //         origin: allowedOrigins,  // Allow Angular dev server or production frontend
+    //         methods: ['GET', 'POST'],
+    //         credentials: true
+    //     }
+    // });
+
+    const io = socketIo(server);
 
     // Socket.io event handlers
     io.on('connection', (socket) => {
